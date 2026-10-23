@@ -1,0 +1,32 @@
+{
+  "name": "@delphia/bridge",
+  "version": "0.1.0",
+  "description": "Pont local DelphIA : sert le concepteur, expose un WebSocket et écrit .delphia/overrides.json.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "bin": {
+    "delphia-bridge": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/ws": "8.18.2"
+  },
+  "dependencies": {
+    "@delphia/protocol": "*",
+    "ws": "8.22.0"
+  }
+}
