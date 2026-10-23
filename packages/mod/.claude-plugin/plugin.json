@@ -1,0 +1,8 @@
+{
+  "name": "delphia",
+  "version": "0.1.0",
+  "description": "Pont entre Claude Code et le concepteur visuel DelphIA : lance le serveur pont, protège les ajustements manuels (.delphia/) et rappelle à Claude quels éléments sont verrouillés.",
+  "license": "MIT",
+  "author": { "name": "Murukan" },
+  "types": "./types/index.d.ts"
+}
