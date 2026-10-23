@@ -1,7 +1,7 @@
 # ADR 0002 — Pont mod ↔ concepteur : fichiers d'abord, processus lancé par le mod
 
 - Date : 2026-10-24
-- Statut : accepté (lancement par le mod : à confirmer par la sonde, cf. journal)
+- Statut : accepté — lancement par le mod vérifié le 2026-10-24 (sonde `delphia-probe` : serveur Node lancé par `$.process.spawn` dans le Code tab de l'app desktop, joignable sur 127.0.0.1)
 
 ## Contexte
 
