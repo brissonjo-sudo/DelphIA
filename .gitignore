@@ -10,4 +10,4 @@ packages/mod/.claude-plugin/types/
 # Tauri
 src-tauri/target/
 # Ajustements et état runtime des projets d'exemple
-examples/**/.delphia/bridge.json
+examples/**/.delphia/

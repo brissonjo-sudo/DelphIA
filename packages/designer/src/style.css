@@ -41,7 +41,8 @@ body {
     'list stage insp'
     'status status status';
   height: 100vh;
-  min-width: 1100px;
+  /* La scène centrale rétrécit ; en dessous, les panneaux latéraux défilent. */
+  min-width: 900px;
 }
 
 :focus-visible {
