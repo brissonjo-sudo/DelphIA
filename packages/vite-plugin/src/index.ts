@@ -1,0 +1,5 @@
+export { delphia, delphia as default } from './plugin.js'
+export type { DelphiaOptions } from './plugin.js'
+export { defaultDesignerOrigins } from './config-source.js'
+export { OVERRIDES_EVENT } from './runtime/hot.js'
+export { RUNTIME_ID } from './virtual.js'
