@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestionnaire de tâches</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="barre-outils" data-dz-id="app-toolbar">
+        <h1 class="titre-app" data-dz-id="app-title">Gestionnaire de tâches</h1>
+        <input
+          type="search"
+          class="recherche"
+          data-dz-id="search-box"
+          placeholder="Rechercher une tâche"
+          aria-label="Rechercher une tâche"
+        />
+        <button type="button" class="btn-principal" data-dz-id="btn-new-task">
+          Nouvelle tâche
+        </button>
+      </header>
+
+      <nav class="barre-laterale" data-dz-id="sidebar" aria-label="Filtres">
+        <p class="titre-section">Listes</p>
+        <button type="button" class="filtre" data-dz-id="filter-all" aria-pressed="true">
+          Toutes
+        </button>
+        <button type="button" class="filtre" data-dz-id="filter-today" aria-pressed="false">
+          Aujourd'hui
+        </button>
+        <button type="button" class="filtre" data-dz-id="filter-done" aria-pressed="false">
+          Terminées
+        </button>
+      </nav>
+
+      <main class="contenu">
+        <ul class="liste-taches" data-dz-id="task-list" aria-label="Tâches"></ul>
+        <aside
+          class="panneau-detail"
+          data-dz-id="detail-panel"
+          aria-label="Détail de la tâche"
+        ></aside>
+      </main>
+
+      <footer class="barre-etat" data-dz-id="status-bar" role="status"></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
