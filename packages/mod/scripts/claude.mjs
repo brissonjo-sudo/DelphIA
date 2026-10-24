@@ -1,4 +1,4 @@
-/* global process */
+/* global process, console */
 // Lance un binaire Claude Code assez récent pour les mods (moteur 2.1.308+).
 // Ordre : variable CLAUDE=<chemin> ; sous Windows, la version la plus récente installée par
 // l'app desktop (%LOCALAPPDATA%/Claude-Data/*/claude-code/<version>/*/claude.exe) ;
