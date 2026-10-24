@@ -1,6 +1,8 @@
+import { BAKE_ID_PATTERN, MAX_BAKE_ITEMS, parseBakeDoc } from './bake.js';
 import { parseGeometry } from './geometry.js';
 import { isDzId } from './ids.js';
 import { parseOverrides } from './overrides.js';
+import { isFiniteNum, parseRect } from './rect.js';
 import { fail, isRecord, ok } from './result.js';
 /** Marqueur d'enveloppe : distingue les messages DelphIA des autres `postMessage`. */
 export const PROTOCOL_TAG = 'delphia/1';
@@ -11,21 +13,12 @@ export const wrap = (msg) => ({
 });
 // ── Validation ──────────────────────────────────────────────────────────────
 const MAX_LIST = 5_000;
-const isFiniteNum = (v) => typeof v === 'number' && Number.isFinite(v);
 function unwrap(input) {
     if (!isRecord(input) || input.tag !== PROTOCOL_TAG)
         return fail(['enveloppe DelphIA absente']);
     if (!isRecord(input.msg) || typeof input.msg.type !== 'string')
         return fail(['message sans type']);
     return ok(input.msg);
-}
-function parseRect(v) {
-    if (!isRecord(v))
-        return null;
-    const { x, y, width, height } = v;
-    if (![x, y, width, height].every(isFiniteNum))
-        return null;
-    return { x: x, y: y, width: width, height: height };
 }
 function parseElement(v) {
     if (!isRecord(v) || !isDzId(v.id) || typeof v.tag !== 'string' || v.tag.length > 32)
@@ -102,20 +95,59 @@ function parsePatch(v) {
     }
     return ok({ ...g.value, ...removed });
 }
+const isBakeId = (v) => typeof v === 'string' && BAKE_ID_PATTERN.test(v);
+/** Liste `{ id, <champ>: Rect }` sans doublon, 1 à MAX_BAKE_ITEMS entrées. */
+function parseIdRects(v, field, nullable) {
+    if (!Array.isArray(v) || v.length === 0 || v.length > MAX_BAKE_ITEMS) {
+        return fail([`liste de 1 à ${MAX_BAKE_ITEMS} éléments attendue`]);
+    }
+    const out = [];
+    const seen = new Set();
+    for (const raw of v) {
+        if (!isRecord(raw) || !isDzId(raw.id) || seen.has(raw.id))
+            return fail(['id invalide ou doublon']);
+        seen.add(raw.id);
+        const rect = nullable && raw[field] === null ? null : parseRect(raw[field]);
+        if (rect === null && !(nullable && raw[field] === null))
+            return fail([`${field} invalide`]);
+        out.push({ id: raw.id, [field]: rect });
+    }
+    return ok(out);
+}
 export function parseClientToBridge(input) {
     const m = unwrap(input);
     if (!m.ok)
         return m;
     const msg = m.value;
-    if (!isDzId(msg.id))
-        return fail(['id']);
     switch (msg.type) {
         case 'override:set': {
+            if (!isDzId(msg.id))
+                return fail(['id']);
             const p = parsePatch(msg.patch);
             return p.ok ? ok({ type: msg.type, id: msg.id, patch: p.value }) : p;
         }
         case 'override:clear':
-            return ok({ type: msg.type, id: msg.id });
+            return isDzId(msg.id) ? ok({ type: msg.type, id: msg.id }) : fail(['id']);
+        case 'bake:request': {
+            const items = parseIdRects(msg.items, 'target', false);
+            if (!items.ok)
+                return items;
+            return ok({
+                type: msg.type,
+                items: items.value.map(i => ({ id: i.id, target: i.target })),
+            });
+        }
+        case 'bake:verify': {
+            if (!isBakeId(msg.bakeId))
+                return fail(['bakeId']);
+            const results = parseIdRects(msg.results, 'actual', true);
+            return results.ok
+                ? ok({ type: msg.type, bakeId: msg.bakeId, results: results.value })
+                : results;
+        }
+        case 'bake:revert':
+        case 'bake:cancel':
+            return isBakeId(msg.bakeId) ? ok({ type: msg.type, bakeId: msg.bakeId }) : fail(['bakeId']);
         default:
             return fail([`type inconnu : ${String(msg.type)}`]);
     }
@@ -129,6 +161,10 @@ export function parseBridgeToClient(input) {
         case 'overrides:state': {
             const d = parseOverrides(msg.doc);
             return d.ok ? ok({ type: msg.type, doc: d.value }) : d;
+        }
+        case 'bake:state': {
+            const b = parseBakeDoc(msg.bake);
+            return b.ok ? ok({ type: msg.type, bake: b.value }) : b;
         }
         case 'bridge:error':
             return typeof msg.message === 'string'

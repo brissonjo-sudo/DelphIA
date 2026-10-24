@@ -1,4 +1,6 @@
 export * from './result.js'
+export * from './rect.js'
+export * from './bake.js'
 export * from './ids.js'
 export * from './paths.js'
 export * from './geometry.js'

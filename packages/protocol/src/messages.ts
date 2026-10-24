@@ -1,17 +1,12 @@
+import { BAKE_ID_PATTERN, MAX_BAKE_ITEMS, parseBakeDoc, type BakeDoc } from './bake.js'
 import { parseGeometry, type Geometry } from './geometry.js'
 import { isDzId } from './ids.js'
 import { parseOverrides, type GeometryPatch, type OverridesDoc } from './overrides.js'
+import { isFiniteNum, parseRect, type Rect } from './rect.js'
 import { fail, isRecord, ok, type Result } from './result.js'
 
 /** Marqueur d'enveloppe : distingue les messages DelphIA des autres `postMessage`. */
 export const PROTOCOL_TAG = 'delphia/1'
-
-export interface Rect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
 
 /** Un élément ajustable tel que le runtime le mesure dans l'app affichée. */
 export interface ElementInfo {
@@ -41,9 +36,19 @@ export type DesignerToRuntime =
 export type ClientToBridge =
   | { type: 'override:set'; id: string; patch: GeometryPatch }
   | { type: 'override:clear'; id: string }
+  /** « Figer » : rectangles visés, mesurés avec la surcouche ; la géométrie vient du pont. */
+  | { type: 'bake:request'; items: { id: string; target: Rect }[] }
+  /** Mesures après figeage ; le pont juge lui-même (`compareRects`). `null` = introuvable. */
+  | { type: 'bake:verify'; bakeId: string; results: { id: string; actual: Rect | null }[] }
+  /** Remet dans la surcouche les ajustements figés (le code modifié reste : git). */
+  | { type: 'bake:revert'; bakeId: string }
+  /** Abandonne une demande pas encore traitée par Claude. */
+  | { type: 'bake:cancel'; bakeId: string }
 
 export type BridgeToClient =
-  { type: 'overrides:state'; doc: OverridesDoc } | { type: 'bridge:error'; message: string }
+  | { type: 'overrides:state'; doc: OverridesDoc }
+  | { type: 'bake:state'; bake: BakeDoc }
+  | { type: 'bridge:error'; message: string }
 
 /** Enveloppe sur le fil : `{ tag, msg }`. */
 export const wrap = <M>(msg: M): { tag: typeof PROTOCOL_TAG; msg: M } => ({
@@ -54,19 +59,11 @@ export const wrap = <M>(msg: M): { tag: typeof PROTOCOL_TAG; msg: M } => ({
 // ── Validation ──────────────────────────────────────────────────────────────
 
 const MAX_LIST = 5_000
-const isFiniteNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
 
 function unwrap(input: unknown): Result<Record<string, unknown>> {
   if (!isRecord(input) || input.tag !== PROTOCOL_TAG) return fail(['enveloppe DelphIA absente'])
   if (!isRecord(input.msg) || typeof input.msg.type !== 'string') return fail(['message sans type'])
   return ok(input.msg)
-}
-
-function parseRect(v: unknown): Rect | null {
-  if (!isRecord(v)) return null
-  const { x, y, width, height } = v
-  if (![x, y, width, height].every(isFiniteNum)) return null
-  return { x: x as number, y: y as number, width: width as number, height: height as number }
 }
 
 function parseElement(v: unknown): ElementInfo | null {
@@ -135,18 +132,60 @@ function parsePatch(v: unknown): Result<GeometryPatch> {
   return ok({ ...g.value, ...removed })
 }
 
+const isBakeId = (v: unknown): v is string => typeof v === 'string' && BAKE_ID_PATTERN.test(v)
+
+/** Liste `{ id, <champ>: Rect }` sans doublon, 1 à MAX_BAKE_ITEMS entrées. */
+function parseIdRects<K extends string>(
+  v: unknown,
+  field: K,
+  nullable: boolean,
+): Result<({ id: string } & Record<K, Rect | null>)[]> {
+  if (!Array.isArray(v) || v.length === 0 || v.length > MAX_BAKE_ITEMS) {
+    return fail([`liste de 1 à ${MAX_BAKE_ITEMS} éléments attendue`])
+  }
+  const out: ({ id: string } & Record<K, Rect | null>)[] = []
+  const seen = new Set<string>()
+  for (const raw of v) {
+    if (!isRecord(raw) || !isDzId(raw.id) || seen.has(raw.id))
+      return fail(['id invalide ou doublon'])
+    seen.add(raw.id)
+    const rect = nullable && raw[field] === null ? null : parseRect(raw[field])
+    if (rect === null && !(nullable && raw[field] === null)) return fail([`${field} invalide`])
+    out.push({ id: raw.id, [field]: rect } as { id: string } & Record<K, Rect | null>)
+  }
+  return ok(out)
+}
+
 export function parseClientToBridge(input: unknown): Result<ClientToBridge> {
   const m = unwrap(input)
   if (!m.ok) return m
   const msg = m.value
-  if (!isDzId(msg.id)) return fail(['id'])
   switch (msg.type) {
     case 'override:set': {
+      if (!isDzId(msg.id)) return fail(['id'])
       const p = parsePatch(msg.patch)
       return p.ok ? ok({ type: msg.type, id: msg.id, patch: p.value }) : p
     }
     case 'override:clear':
-      return ok({ type: msg.type, id: msg.id })
+      return isDzId(msg.id) ? ok({ type: msg.type, id: msg.id }) : fail(['id'])
+    case 'bake:request': {
+      const items = parseIdRects(msg.items, 'target', false)
+      if (!items.ok) return items
+      return ok({
+        type: msg.type,
+        items: items.value.map(i => ({ id: i.id, target: i.target as Rect })),
+      })
+    }
+    case 'bake:verify': {
+      if (!isBakeId(msg.bakeId)) return fail(['bakeId'])
+      const results = parseIdRects(msg.results, 'actual', true)
+      return results.ok
+        ? ok({ type: msg.type, bakeId: msg.bakeId, results: results.value })
+        : results
+    }
+    case 'bake:revert':
+    case 'bake:cancel':
+      return isBakeId(msg.bakeId) ? ok({ type: msg.type, bakeId: msg.bakeId }) : fail(['bakeId'])
     default:
       return fail([`type inconnu : ${String(msg.type)}`])
   }
@@ -160,6 +199,10 @@ export function parseBridgeToClient(input: unknown): Result<BridgeToClient> {
     case 'overrides:state': {
       const d = parseOverrides(msg.doc)
       return d.ok ? ok({ type: msg.type, doc: d.value }) : d
+    }
+    case 'bake:state': {
+      const b = parseBakeDoc(msg.bake)
+      return b.ok ? ok({ type: msg.type, bake: b.value }) : b
     }
     case 'bridge:error':
       return typeof msg.message === 'string'
