@@ -13,7 +13,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @delphia/protocol && npm run build -w @delphia/vite-plugin && npm run build -w @delphia/bridge && npm run build -w @delphia/designer && npm run build -w @delphia/demo",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "lint": "eslint .",
