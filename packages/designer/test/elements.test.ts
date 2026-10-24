@@ -1,4 +1,4 @@
-import type { ElementInfo } from '@vite-plugin-delphia/protocol'
+import type { ElementInfo } from '@vite-plugin-delph-ia/protocol'
 import { describe, expect, it } from 'vitest'
 import { descendantsOf, findOrphans, hitTest, snapTargets } from '../src/core/elements.js'
 import { parseField } from '../src/core/fields.js'

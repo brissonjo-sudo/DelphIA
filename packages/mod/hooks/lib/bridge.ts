@@ -34,7 +34,7 @@ export async function readBridgeState($: Ctx): Promise<BridgeState> {
 /** Chemin du CLI du pont : copie locale du projet, sinon dépôt voisin du mod. */
 export async function findBridgeCli($: Ctx, cwd: string): Promise<string | undefined> {
   const candidates = [
-    join(cwd, 'node_modules/@vite-plugin-delphia/bridge/dist/cli.js'),
+    join(cwd, 'node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js'),
     `${$.plugin.root}/../bridge/dist/cli.js`,
   ]
   for (const path of candidates) {
@@ -74,7 +74,7 @@ export async function startBridge($: Ctx, cwd: string): Promise<void> {
         status: 'failed',
         url: null,
         detail:
-          'cli du pont introuvable (npm install @vite-plugin-delphia/bridge, ou npm run delphia)',
+          'cli du pont introuvable (npm install @vite-plugin-delph-ia/bridge, ou npm run delphia)',
       })
     }
     const { port } = await readConfig($, cwd)

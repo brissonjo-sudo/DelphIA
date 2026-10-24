@@ -33,7 +33,7 @@ const HTML_TYPE = 'text/html; charset=utf-8'
 const FALLBACK_HTML = `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><title>DelphIA</title></head>
 <body><h1>DelphIA</h1>
-<p>Concepteur non buildé : <code>npm run build -w @vite-plugin-delphia/designer</code></p></body></html>
+<p>Concepteur non buildé : <code>npm run build -w @vite-plugin-delph-ia/designer</code></p></body></html>
 `
 
 /** Anti DNS-rebinding : seuls `127.0.0.1:<port>` et `localhost:<port>` sont acceptés. */

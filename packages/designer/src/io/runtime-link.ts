@@ -3,7 +3,7 @@ import {
   wrap,
   type DesignerToRuntime,
   type RuntimeToDesigner,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 
 /** Interface commune au vrai lien (iframe) et à sa doublure de démonstration. */
 export interface RuntimeLink {

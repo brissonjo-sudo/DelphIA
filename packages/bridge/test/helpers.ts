@@ -8,7 +8,7 @@ import {
   wrap,
   type BridgeToClient,
   type OverridesDoc,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 import { WebSocket } from 'ws'
 import { startBridge, type BridgeHandle } from '../src/server.js'
 

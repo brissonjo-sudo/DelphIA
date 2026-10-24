@@ -1,4 +1,4 @@
-import type { ElementInfo, Rect } from '@vite-plugin-delphia/protocol'
+import type { ElementInfo, Rect } from '@vite-plugin-delph-ia/protocol'
 
 /**
  * Élément sous le point : le plus petit rectangle qui le contient (bords inclus). À aire égale,

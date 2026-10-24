@@ -3,7 +3,7 @@ import {
   normalizeGeometry,
   type Geometry,
   type Rect,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 
 /** Poignées de redimensionnement, nommées par les points cardinaux touchés. */
 export type Handle = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw'

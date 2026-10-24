@@ -13,7 +13,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "npm run build -w @vite-plugin-delphia/protocol && npm run build -w @vite-plugin-delphia/vite-plugin && npm run build -w @vite-plugin-delphia/designer && npm run build -w @vite-plugin-delphia/bridge && npm run build -w @vite-plugin-delphia/demo",
+    "build": "npm run build -w @vite-plugin-delph-ia/protocol && npm run build -w @vite-plugin-delph-ia/vite-plugin && npm run build -w @vite-plugin-delph-ia/designer && npm run build -w @vite-plugin-delph-ia/bridge && npm run build -w @vite-plugin-delph-ia/demo",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "lint": "eslint .",
@@ -21,7 +21,7 @@
     "format:check": "prettier --check .",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
     "delphia": "node packages/bridge/dist/cli.js",
-    "release:dry-run": "npm publish --dry-run -w @vite-plugin-delphia/protocol -w @vite-plugin-delphia/vite-plugin -w @vite-plugin-delphia/bridge"
+    "release:dry-run": "npm publish --dry-run -w @vite-plugin-delph-ia/protocol -w @vite-plugin-delph-ia/vite-plugin -w @vite-plugin-delph-ia/bridge"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

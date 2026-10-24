@@ -16,7 +16,7 @@ DelphIA est un outil de développement local. Il n'est pas conçu pour être exp
   les types MIME sont en liste blanche, `X-Content-Type-Options: nosniff`.
 - **Tous les messages sont validés** : WebSocket (texte JSON, 64 Ko au plus), `postMessage` et
   fichiers (`overrides.json`, `bridge.json`, `delphia.config.json`) passent par les `parse*` de
-  `@vite-plugin-delphia/protocol`. Un message invalide reçoit une erreur, la connexion reste ouverte.
+  `@vite-plugin-delph-ia/protocol`. Un message invalide reçoit une erreur, la connexion reste ouverte.
 - **CSS généré seulement depuis des ids validés** : un id `data-dz-id` doit respecter
   `^[a-z][a-z0-9-]{0,63}$` et n'entre dans un sélecteur que via `dzSelector` ; les valeurs
   numériques sont des entiers bornés à ±10 000.

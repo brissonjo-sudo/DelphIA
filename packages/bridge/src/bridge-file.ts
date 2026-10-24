@@ -1,6 +1,6 @@
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { BRIDGE_FILE, parseBridgeInfo, type BridgeInfo } from '@vite-plugin-delphia/protocol'
+import { BRIDGE_FILE, parseBridgeInfo, type BridgeInfo } from '@vite-plugin-delph-ia/protocol'
 
 /** Écrit `.delphia/bridge.json` (atomique : fichier temporaire puis renommage). */
 export async function writeBridgeInfo(project: string, info: BridgeInfo): Promise<void> {

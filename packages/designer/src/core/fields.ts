@@ -1,4 +1,4 @@
-import { MAX_PX, type GeometryKey } from '@vite-plugin-delphia/protocol'
+import { MAX_PX, type GeometryKey } from '@vite-plugin-delph-ia/protocol'
 
 export type FieldParse = { ok: true; value: number | null } | { ok: false; reason: string }
 

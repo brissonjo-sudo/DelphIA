@@ -5,7 +5,7 @@ import {
   DELPHIA_DIR,
   parseBridgeInfo,
   parseOverrides,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { WebSocket } from 'ws'
 import { Client, overridesPath, setup, type Fixture } from './helpers.js'

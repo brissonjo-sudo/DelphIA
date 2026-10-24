@@ -5,7 +5,7 @@ import {
   wrap,
   type BridgeToClient,
   type OverridesDoc,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 import { WebSocket, WebSocketServer } from 'ws'
 import { hostAllowed } from './http.js'
 import type { Store } from './store.js'

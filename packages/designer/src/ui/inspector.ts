@@ -1,4 +1,4 @@
-import { GEOMETRY_KEYS, type GeometryKey, type GeometryPatch } from '@vite-plugin-delphia/protocol'
+import { GEOMETRY_KEYS, type GeometryKey, type GeometryPatch } from '@vite-plugin-delph-ia/protocol'
 import type { Actions } from '../actions.js'
 import { parseField } from '../core/fields.js'
 import type { AppState } from '../state.js'

@@ -8,7 +8,7 @@
 > keyboard. Your tweaks are stored in `.delphia/overrides.json` and applied as a CSS overlay, so
 > Claude never overwrites them. A Claude Code mod starts the local bridge, forbids Claude from
 > writing to `.delphia/` or removing a pinned id, and tells it which elements are locked.
-> Install: `npm install -D @vite-plugin-delphia/vite-plugin @vite-plugin-delphia/bridge` (Vite 8); the mod needs Claude Code
+> Install: `npm install -D @vite-plugin-delph-ia/vite-plugin @vite-plugin-delph-ia/bridge` (Vite 8); the mod needs Claude Code
 > engine 2.1.308+. MIT licence. Docs are in French.
 
 ## En bref
@@ -61,7 +61,7 @@ Prérequis : **Node ≥ 22**. Rust n'est pas nécessaire pour la démo (front Vi
 ```bash
 npm install
 npm run build
-npm run dev -w @vite-plugin-delphia/demo                 # terminal 1 : l'app, sur http://localhost:1420
+npm run dev -w @vite-plugin-delph-ia/demo                 # terminal 1 : l'app, sur http://localhost:1420
 npm run delphia -- --project examples/demo   # terminal 2 : le concepteur, sur http://127.0.0.1:4317/
 ```
 
@@ -86,7 +86,7 @@ déclare le mod `delphia` (source : `packages/mod`). Le mod ne s'active que dans
 contient `delphia.config.json`.
 
 Pour lancer le pont, le mod cherche son CLI dans
-`<projet>/node_modules/@vite-plugin-delphia/bridge/dist/cli.js` (installé à l'étape 2 ci-dessous), puis à
+`<projet>/node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js` (installé à l'étape 2 ci-dessous), puis à
 côté de lui-même (`../bridge/dist/cli.js`, quand le mod est chargé depuis ce dépôt). S'il ne le
 trouve pas, il affiche « DelphIA : pont indisponible » et protège quand même `.delphia/` et les
 ids épinglés ; lancez alors le pont à la main (`npx delphia-bridge --project .`).
@@ -109,14 +109,14 @@ sait pas charger ces modules.
 2. **Paquets npm** (le pont embarque l'interface du concepteur) :
 
    ```bash
-   npm install -D @vite-plugin-delphia/vite-plugin @vite-plugin-delphia/bridge
+   npm install -D @vite-plugin-delph-ia/vite-plugin @vite-plugin-delph-ia/bridge
    ```
 
    Puis le **plugin Vite** dans `vite.config.ts` :
 
    ```ts
    import { defineConfig } from 'vite'
-   import delphia from '@vite-plugin-delphia/vite-plugin'
+   import delphia from '@vite-plugin-delph-ia/vite-plugin'
 
    export default defineConfig({
      server: { port: 1420, strictPort: true },
@@ -139,7 +139,7 @@ monorepo, concepteur, ajustement au clavier, build, mod qui lance le pont depuis
 
 ## Limites connues
 
-- **Version 0.1** : `@vite-plugin-delphia/vite-plugin` exige Vite 8 (non testé sur Vite 5 à 7).
+- **Version 0.1** : `@vite-plugin-delph-ia/vite-plugin` exige Vite 8 (non testé sur Vite 5 à 7).
 - **Mod en accès anticipé** de Claude Code : moteur 2.1.308 ou plus ; API susceptible de changer.
 - **`translate` décale sans libérer l'espace** : un élément déplacé laisse sa place d'origine
   vide dans la mise en page. C'est voulu pour la retouche fine ; ce n'est pas du positionnement

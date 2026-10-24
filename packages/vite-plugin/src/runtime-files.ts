@@ -13,9 +13,9 @@ export function runtimeEntry(): string {
   return existsSync(js) ? js : join(runtimeDir, 'index.ts')
 }
 
-/** Point d'entrée de `@vite-plugin-delphia/protocol`, résolu depuis ce paquet. */
+/** Point d'entrée de `@vite-plugin-delph-ia/protocol`, résolu depuis ce paquet. */
 export const protocolEntry = (): string =>
-  createRequire(import.meta.url).resolve('@vite-plugin-delphia/protocol')
+  createRequire(import.meta.url).resolve('@vite-plugin-delph-ia/protocol')
 
 export const toPosix = (p: string): string => p.replaceAll('\\', '/')
 

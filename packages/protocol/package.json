@@ -1,5 +1,5 @@
 {
-  "name": "@vite-plugin-delphia/protocol",
+  "name": "@vite-plugin-delph-ia/protocol",
   "version": "0.1.0",
   "description": "Contrat partagé DelphIA : identifiants, ajustements manuels, messages, génération CSS. Sans dépendance.",
   "keywords": [

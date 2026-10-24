@@ -5,7 +5,7 @@ import {
   OVERRIDES_FILE,
   parseOverrides,
   type OverridesDoc,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 import type { Warn } from './config-source.js'
 
 export const overridesPath = (root: string): string => join(root, OVERRIDES_FILE)

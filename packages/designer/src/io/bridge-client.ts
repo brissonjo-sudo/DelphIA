@@ -3,7 +3,7 @@ import {
   wrap,
   type BridgeToClient,
   type ClientToBridge,
-} from '@vite-plugin-delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 
 export type BridgeStatus = 'connecting' | 'open' | 'closed'
 

@@ -1,4 +1,4 @@
-import { PROTOCOL_TAG } from '@vite-plugin-delphia/protocol'
+import { PROTOCOL_TAG } from '@vite-plugin-delph-ia/protocol'
 import { describe, expect, it } from 'vitest'
 import {
   createBridgeClient,

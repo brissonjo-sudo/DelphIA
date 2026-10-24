@@ -2,25 +2,25 @@
 
 Paquets publiés, dans cet ordre (chacun dépend des précédents) :
 
-1. `@vite-plugin-delphia/protocol`
-2. `@vite-plugin-delphia/vite-plugin`
-3. `@vite-plugin-delphia/bridge` (embarque l'interface du concepteur dans `dist/designer`)
+1. `@vite-plugin-delph-ia/protocol`
+2. `@vite-plugin-delph-ia/vite-plugin`
+3. `@vite-plugin-delph-ia/bridge` (embarque l'interface du concepteur dans `dist/designer`)
 
-`@vite-plugin-delphia/designer`, `@vite-plugin-delphia/mod` et `@vite-plugin-delphia/demo` sont privés : ils ne sont jamais publiés.
+`@vite-plugin-delph-ia/designer`, `@vite-plugin-delph-ia/mod` et `@vite-plugin-delph-ia/demo` sont privés : ils ne sont jamais publiés.
 Le mod se distribue par la marketplace du dépôt (`.claude-plugin/marketplace.json`).
 
 ## Une seule fois
 
 1. Compte npm avec **double authentification** activée.
-2. Organisation npm **`vite-plugin-delphia`** (gratuite pour des paquets publics ;
+2. Organisation npm **`vite-plugin-delph-ia`** (gratuite pour des paquets publics ;
    l'organisation `delphia` était déjà prise) :
-   npmjs.com → _Add Organization_. Sans elle, le scope `@vite-plugin-delphia` est refusé.
+   npmjs.com → _Add Organization_. Sans elle, le scope `@vite-plugin-delph-ia` est refusé.
 3. `npm login` dans un terminal.
 
 ## À chaque version
 
 1. Mettre la même version dans les trois `package.json` publiés, et la plage
-   `@vite-plugin-delphia/protocol` correspondante dans `vite-plugin`, `bridge` et `designer`.
+   `@vite-plugin-delph-ia/protocol` correspondante dans `vite-plugin`, `bridge` et `designer`.
    Puis `npm install` pour mettre à jour le lockfile.
 2. Vérifier :
 
@@ -36,13 +36,13 @@ Le mod se distribue par la marketplace du dépôt (`.claude-plugin/marketplace.j
 3. Publier, dans l'ordre (npm demande le code de double authentification à chaque fois) :
 
    ```bash
-   npm publish -w @vite-plugin-delphia/protocol
-   npm publish -w @vite-plugin-delphia/vite-plugin
-   npm publish -w @vite-plugin-delphia/bridge
+   npm publish -w @vite-plugin-delph-ia/protocol
+   npm publish -w @vite-plugin-delph-ia/vite-plugin
+   npm publish -w @vite-plugin-delph-ia/bridge
    ```
 
-4. Contrôler : `npm view @vite-plugin-delphia/bridge version`, puis installer dans un projet vide
-   (`npm install -D @vite-plugin-delphia/vite-plugin @vite-plugin-delphia/bridge`) et lancer `npx delphia-bridge --help`.
+4. Contrôler : `npm view @vite-plugin-delph-ia/bridge version`, puis installer dans un projet vide
+   (`npm install -D @vite-plugin-delph-ia/vite-plugin @vite-plugin-delph-ia/bridge`) et lancer `npx delphia-bridge --help`.
 5. Ajouter l'entrée de version au `CHANGELOG.md`, créer le tag `vX.Y.Z` et la release GitHub.
 
 Une version publiée ne peut pas être republiée sous le même numéro. En cas d'erreur, publier

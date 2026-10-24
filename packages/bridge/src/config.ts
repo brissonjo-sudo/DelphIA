@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { CONFIG_FILE, parseConfig, type DelphiaConfig } from '@vite-plugin-delphia/protocol'
+import { CONFIG_FILE, parseConfig, type DelphiaConfig } from '@vite-plugin-delph-ia/protocol'
 
 /** Lit `delphia.config.json` du projet ; absent → valeurs par défaut ; invalide → erreur lisible. */
 export async function readConfig(project: string): Promise<DelphiaConfig> {
