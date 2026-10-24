@@ -90,6 +90,12 @@ function run(events: VerifyEvent[], start: VerifyFlow = initialFlow()) {
   return { flow, actions }
 }
 const applied = (now = 0): VerifyEvent => ({ kind: 'bake', current: req('applied'), now })
+const appliedCleared = (now = 0): VerifyEvent => ({
+  kind: 'bake',
+  current: req('applied'),
+  now,
+  overlayCleared: true,
+})
 
 describe('stepVerify', () => {
   it('overrides puis elements : mesure, puis vérification une seule fois', () => {
@@ -155,5 +161,12 @@ describe('affichage', () => {
     expect(mm?.canRevert).toBe(true)
     expect(mm?.details).toEqual(['a : x +5 px', 'Fichiers touchés : src/a.css'])
     expect(bannerModel(doc(null, [req('reverted')]), 'bk-abcdef01', null)).toBeNull()
+  })
+})
+
+describe('ordre du vrai pont (overrides:state avant bake:state)', () => {
+  it('surcouche déjà vidée : la mesure part au runtime:elements suivant, sans attendre 5 s', () => {
+    const r = run([appliedCleared(0), { kind: 'elements', now: 100 }])
+    expect(r.actions).toContain('measure')
   })
 })

@@ -35,7 +35,11 @@ export function createBakeController(
   return {
     onBake() {
       store.set({ bakeNotice: null })
-      feed({ kind: 'bake', current: store.get().bake.current, now: now() })
+      const { bake, overrides } = store.get()
+      const current = bake.current
+      const overlayCleared =
+        current !== null && current.items.every(it => !(it.id in overrides.elements))
+      feed({ kind: 'bake', current, now: now(), overlayCleared })
     },
     onOverrides: () => feed({ kind: 'overrides' }),
     onElements: () => feed({ kind: 'elements', now: now() }),

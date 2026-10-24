@@ -71,7 +71,12 @@ export interface VerifyFlow {
   handled: readonly string[]
 }
 export type VerifyEvent =
-  | { kind: 'bake'; current: BakeRequest | null; now: number }
+  /**
+   * `overlayCleared` : la surcouche reçue ne contient déjà plus aucun élément de la demande.
+   * Le pont diffuse `overrides:state` AVANT `bake:state` : sans ce drapeau, on attendrait un
+   * nouvel `overrides:state` qui ne viendra pas (5 s perdues).
+   */
+  | { kind: 'bake'; current: BakeRequest | null; now: number; overlayCleared?: boolean }
   | { kind: 'overrides' }
   | { kind: 'elements'; now: number }
   | { kind: 'tick'; now: number }
@@ -93,7 +98,7 @@ export function stepVerify(
       const next: Pending = {
         bakeId: c.bakeId,
         startedAt: ev.now,
-        overridesSeen: false,
+        overridesSeen: ev.overlayCleared === true,
         phase: 'waiting',
       }
       return { flow: { ...flow, pending: next }, action: null }
