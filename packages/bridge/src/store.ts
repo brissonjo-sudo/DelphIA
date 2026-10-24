@@ -1,6 +1,5 @@
-import { randomUUID } from 'node:crypto'
 import { watch, type FSWatcher } from 'node:fs'
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   DELPHIA_DIR,
@@ -11,20 +10,31 @@ import {
   type GeometryPatch,
   type OverridesDoc,
 } from '@vite-plugin-delph-ia/protocol'
+import { atomicWrite } from './fs-atomic.js'
+
+/** Accès au disque réservé à une tâche de `Store.run`. */
+export interface StoreTx {
+  /** Dernier état écrit sur le disque (intègre une édition externe récente). */
+  read(): Promise<OverridesDoc>
+  write(doc: OverridesDoc): Promise<void>
+}
 
 export interface Store {
   current(): OverridesDoc
   /** `patch === null` retire tout l'ajustement de l'élément. Écritures sérialisées. */
   apply(id: string, patch: GeometryPatch | null): Promise<OverridesDoc>
+  /**
+   * Exécute `task` dans la file des écritures (jamais entrelacée avec `apply`), ce qui permet
+   * à un autre module de modifier `overrides.json` et son propre fichier d'un seul tenant.
+   */
+  run<T>(task: (tx: StoreTx) => Promise<T>): Promise<T>
   close(): void
 }
 
 const OVERRIDES_NAME = 'overrides.json'
 const DEBOUNCE_MS = 50
-const RENAME_RETRIES = 5
 
 const serialize = (doc: OverridesDoc): string => `${JSON.stringify(doc, null, 2)}\n`
-const sleep = (ms: number): Promise<void> => new Promise(r => setTimeout(r, ms))
 
 async function readDisk(file: string): Promise<{ doc: OverridesDoc; text: string } | null> {
   let text: string
@@ -43,26 +53,6 @@ async function readDisk(file: string): Promise<{ doc: OverridesDoc; text: string
   const parsed = parseOverrides(json)
   if (!parsed.ok) throw new Error(`${OVERRIDES_FILE} invalide : ${parsed.errors.join(' ; ')}`)
   return { doc: parsed.value, text }
-}
-
-async function atomicWrite(file: string, text: string): Promise<void> {
-  const tmp = `${file}.${randomUUID().slice(0, 8)}.tmp`
-  await writeFile(tmp, text)
-  for (let attempt = 0; ; attempt++) {
-    try {
-      await rename(tmp, file)
-      return
-    } catch (e) {
-      // Windows : un lecteur concurrent peut bloquer brièvement le renommage.
-      const code = (e as NodeJS.ErrnoException).code
-      const transient = code === 'EPERM' || code === 'EBUSY' || code === 'EACCES'
-      if (!transient || attempt >= RENAME_RETRIES) {
-        await rm(tmp, { force: true })
-        throw e
-      }
-      await sleep(20 * (attempt + 1))
-    }
-  }
 }
 
 /**
@@ -118,23 +108,32 @@ export async function openStore(
   })
   watcher.on('error', e => log(`surveillance de ${OVERRIDES_FILE} interrompue : ${e.message}`))
 
+  const tx: StoreTx = {
+    read: async () => {
+      const disk = await readDisk(file) // repart du disque : intègre une édition externe récente
+      return disk?.doc ?? { ...emptyOverrides(), revision: doc.revision }
+    },
+    write: async next => {
+      const text = serialize(next)
+      const previous = lastText
+      lastText = text // posé avant le renommage pour que le watcher reconnaisse l'écriture
+      try {
+        await atomicWrite(file, text)
+      } catch (e) {
+        lastText = previous
+        throw e
+      }
+      doc = next
+    },
+  }
+
   return {
     current: () => doc,
+    run: task => enqueue(() => task(tx)),
     apply: (id, patch) =>
       enqueue(async () => {
-        const disk = await readDisk(file) // repart du disque : intègre une édition externe récente
-        const base = disk?.doc ?? { ...emptyOverrides(), revision: doc.revision }
-        const next = applyPatch(base, id, patch, new Date())
-        const text = serialize(next)
-        const previous = lastText
-        lastText = text // posé avant le renommage pour que le watcher reconnaisse l'écriture
-        try {
-          await atomicWrite(file, text)
-        } catch (e) {
-          lastText = previous
-          throw e
-        }
-        doc = next
+        const next = applyPatch(await tx.read(), id, patch, new Date())
+        await tx.write(next)
         return next
       }),
     close: () => {

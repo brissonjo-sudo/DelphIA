@@ -1,9 +1,12 @@
+import { randomBytes } from 'node:crypto'
 import { stat } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { BridgeInfo } from '@vite-plugin-delph-ia/protocol'
+import { createBakeRoutes } from './bake-routes.js'
+import { openBakeStore } from './bake-store.js'
 import { removeBridgeInfo, writeBridgeInfo } from './bridge-file.js'
 import { readConfig } from './config.js'
 import { createRequestHandler } from './http.js'
@@ -25,6 +28,8 @@ export interface BridgeOptions {
 
 export interface BridgeHandle {
   port: number
+  /** Jeton des routes HTTP du mod (aussi dans `bridge.json`). */
+  token: string
   close(): Promise<void>
 }
 
@@ -60,8 +65,22 @@ export async function startBridge(options: BridgeOptions): Promise<BridgeHandle>
   let port = wanted
   // `hub` est affecté avant tout événement du watcher (aucun tour de boucle entre les deux).
   const store = await openStore(project, doc => hub.broadcast(doc), log)
-  const server = createServer(createRequestHandler({ designerDir, appPort, getPort: () => port }))
-  const hub = attachWs(server, store, () => port, log)
+  const token = randomBytes(32).toString('hex')
+  let bake: Awaited<ReturnType<typeof openBakeStore>>
+  try {
+    bake = await openBakeStore(project, store, change => {
+      if (change.overrides) hub.broadcast(change.overrides)
+      hub.broadcastBake(change.bake)
+    })
+  } catch (e) {
+    store.close()
+    throw e
+  }
+  const bakeRoutes = createBakeRoutes({ bake, token })
+  const server = createServer(
+    createRequestHandler({ designerDir, appPort, getPort: () => port, bakeRoutes }),
+  )
+  const hub = attachWs(server, store, bake, () => port, log)
 
   try {
     await new Promise<void>((ok, ko) => {
@@ -84,7 +103,13 @@ export async function startBridge(options: BridgeOptions): Promise<BridgeHandle>
   }
   port = (server.address() as AddressInfo).port
 
-  const info: BridgeInfo = { pid: process.pid, port, appPort, startedAt: new Date().toISOString() }
+  const info: BridgeInfo = {
+    pid: process.pid,
+    port,
+    appPort,
+    startedAt: new Date().toISOString(),
+    token,
+  }
   let closed: Promise<void> | undefined
   const close = (): Promise<void> =>
     (closed ??= (async () => {
@@ -107,5 +132,5 @@ export async function startBridge(options: BridgeOptions): Promise<BridgeHandle>
     log(`concepteur non buildé (${designerDir}) : page d'aide servie à la racine`)
   }
   log(`DelphIA bridge listening on http://127.0.0.1:${port}/`)
-  return { port, close }
+  return { port, token, close }
 }
