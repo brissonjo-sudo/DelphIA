@@ -1,5 +1,5 @@
 {
-  "name": "@delphia/demo",
+  "name": "@vite-plugin-delph-ia/demo",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@delphia/vite-plugin": "*",
+    "@vite-plugin-delph-ia/vite-plugin": "*",
     "@tauri-apps/cli": "2.12.4",
     "typescript": "6.0.3",
     "vite": "8.3.5"

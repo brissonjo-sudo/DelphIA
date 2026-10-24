@@ -1,8 +1,25 @@
 {
-  "name": "@delphia/protocol",
+  "name": "@vite-plugin-delph-ia/protocol",
   "version": "0.1.0",
   "description": "Contrat partagé DelphIA : identifiants, ajustements manuels, messages, génération CSS. Sans dépendance.",
+  "keywords": [
+    "delphia",
+    "claude-code",
+    "visual-designer",
+    "tauri",
+    "protocol"
+  ],
+  "homepage": "https://github.com/brissonjo-sudo/DelphIA#readme",
+  "bugs": {
+    "url": "https://github.com/brissonjo-sudo/DelphIA/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brissonjo-sudo/DelphIA.git",
+    "directory": "packages/protocol"
+  },
   "license": "MIT",
+  "author": "Murukan",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,9 +30,17 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"

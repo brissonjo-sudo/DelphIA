@@ -1,4 +1,4 @@
-import { PROTOCOL_TAG, wrap } from '@delphia/protocol'
+import { PROTOCOL_TAG, wrap } from '@vite-plugin-delph-ia/protocol'
 import { describe, expect, it } from 'vitest'
 import { parseDesignerConfig } from '../src/io/config.js'
 import { acceptRuntimeMessage, createRuntimeLink } from '../src/io/runtime-link.js'

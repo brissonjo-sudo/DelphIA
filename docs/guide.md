@@ -30,7 +30,7 @@ Claude Code **2.1.308 ou plus** requis. Sans le mod, le concepteur fonctionne, m
 n'empêche Claude d'écraser vos ajustements ni ne l'en informe.
 
 Limite actuelle : le mod trouve le pont seulement dans
-`<projet>/node_modules/@delphia/bridge/dist/cli.js` ou à côté de lui (`../bridge/dist/cli.js`,
+`<projet>/node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js` ou à côté de lui (`../bridge/dist/cli.js`,
 quand il est chargé depuis ce dépôt). Autrement, il affiche « pont indisponible » : lancez le
 pont vous-même (étape 2).
 
@@ -39,7 +39,7 @@ pont vous-même (étape 2).
 Deux terminaux, depuis la racine du dépôt (exemple avec la démo) :
 
 ```bash
-npm run dev -w @delphia/demo                 # l'app : http://localhost:1420
+npm run dev -w @vite-plugin-delph-ia/demo                 # l'app : http://localhost:1420
 npm run delphia -- --project examples/demo   # le pont : http://127.0.0.1:4317/
 ```
 
@@ -136,7 +136,7 @@ changez `appPort` **et** le port de Vite.
 
 **« App : non connectée ».** Vérifiez, dans l'ordre :
 
-1. l'app tourne bien (`npm run dev -w @delphia/demo`, ou le `vite` de votre projet) ;
+1. l'app tourne bien (`npm run dev -w @vite-plugin-delph-ia/demo`, ou le `vite` de votre projet) ;
 2. `appPort` dans `delphia.config.json` est le port réel de Vite ;
 3. `plugins: [delphia()]` est présent dans `vite.config.ts` (c'est lui qui injecte le runtime) ;
 4. vous ouvrez le concepteur par `http://127.0.0.1:<port>/` ou `http://localhost:<port>/`
@@ -153,13 +153,14 @@ l'écrase aussi à son démarrage. Vous pouvez supprimer le fichier à la main (
 le mod bloque ses écritures dans `.delphia/`).
 
 **« DelphIA : pont indisponible — cli du pont introuvable ».** Le mod ne trouve pas
-`@delphia/bridge` (paquet non publié sur npm). Lancez `npm run delphia -- --project <projet>`
-depuis le dépôt DelphIA.
+`<projet>/node_modules/@vite-plugin-delph-ia/bridge`. Installez-le (`npm install -D @vite-plugin-delph-ia/bridge`) puis
+ouvrez une nouvelle session, ou lancez-le à la main : `npx delphia-bridge --project .`
+(depuis le dépôt DelphIA : `npm run delphia -- --project <projet>`).
 
 **Le mod ne se charge pas / `plugin validate` échoue sur les `modules`.** Le `claude` de votre
 `PATH` est trop ancien : les `modules` de hooks demandent le moteur 2.1.308 ou plus. Mettez
 Claude Code à jour ou, pour valider et tester le mod, pointez la variable `CLAUDE` vers un
-binaire récent : `npm run validate -w @delphia/mod` et `npm run test:mod -w @delphia/mod`
+binaire récent : `npm run validate -w @vite-plugin-delph-ia/mod` et `npm run test:mod -w @vite-plugin-delph-ia/mod`
 l'utilisent (sans elle, un chemin par défaut propre à la machine de l'auteur, à surcharger).
 
 **Un ajustement n'apparaît pas dans le build.** Le CSS est généré au `build` à partir de

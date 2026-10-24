@@ -1,13 +1,31 @@
 {
-  "name": "@delphia/bridge",
+  "name": "@vite-plugin-delph-ia/bridge",
   "version": "0.1.0",
   "description": "Pont local DelphIA : sert le concepteur, expose un WebSocket et écrit .delphia/overrides.json.",
+  "keywords": [
+    "delphia",
+    "claude-code",
+    "visual-designer",
+    "tauri",
+    "websocket",
+    "cli"
+  ],
+  "homepage": "https://github.com/brissonjo-sudo/DelphIA#readme",
+  "bugs": {
+    "url": "https://github.com/brissonjo-sudo/DelphIA/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brissonjo-sudo/DelphIA.git",
+    "directory": "packages/bridge"
+  },
   "license": "MIT",
+  "author": "Murukan",
   "type": "module",
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
   "bin": {
-    "delphia-bridge": "./dist/cli.js"
+    "delphia-bridge": "dist/cli.js"
   },
   "exports": {
     ".": {
@@ -16,17 +34,25 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-designer.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@vite-plugin-delph-ia/protocol": "^0.1.0",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@types/ws": "8.18.2"
-  },
-  "dependencies": {
-    "@delphia/protocol": "*",
-    "ws": "8.22.0"
   }
 }

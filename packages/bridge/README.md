@@ -1,4 +1,4 @@
-# @delphia/bridge
+# @vite-plugin-delph-ia/bridge
 
 Pont local DelphIA : sert le concepteur, expose un WebSocket (`/ws`) et reste le **seul** à écrire
 `<projet>/.delphia/overrides.json`.
@@ -21,7 +21,7 @@ npm run delphia -- --project <dossier-du-projet> [--designer-dir <dossier>]
 ## Usage programmatique
 
 ```ts
-import { startBridge } from '@delphia/bridge'
+import { startBridge } from '@vite-plugin-delph-ia/bridge'
 const { port, close } = await startBridge({ project, designerDir, port: 0, log: console.log })
 ```
 

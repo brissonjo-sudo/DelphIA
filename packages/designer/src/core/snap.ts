@@ -1,4 +1,4 @@
-import type { Rect } from '@delphia/protocol'
+import type { Rect } from '@vite-plugin-delph-ia/protocol'
 
 export const SNAP_THRESHOLD = 5
 export const GRID_SIZE = 8

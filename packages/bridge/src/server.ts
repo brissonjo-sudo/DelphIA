@@ -3,7 +3,7 @@ import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { BridgeInfo } from '@delphia/protocol'
+import type { BridgeInfo } from '@vite-plugin-delph-ia/protocol'
 import { removeBridgeInfo, writeBridgeInfo } from './bridge-file.js'
 import { readConfig } from './config.js'
 import { createRequestHandler } from './http.js'
@@ -13,7 +13,7 @@ import { attachWs } from './ws.js'
 export interface BridgeOptions {
   /** Racine du projet cible (contient `delphia.config.json` et `.delphia/`). */
   project: string
-  /** Dossier du concepteur buildé ; défaut : `packages/designer/dist`. */
+  /** Dossier du concepteur buildé ; défaut : `dist/designer` embarqué, sinon `packages/designer/dist`. */
   designerDir?: string
   /** Surcharge du port du pont (0 = port libre aléatoire, pour les tests). */
   port?: number
@@ -28,7 +28,15 @@ export interface BridgeHandle {
   close(): Promise<void>
 }
 
-const DEFAULT_DESIGNER_DIR = fileURLToPath(new URL('../../designer/dist', import.meta.url))
+/**
+ * Emplacements du concepteur buildé, par ordre de préférence :
+ * 1. `dist/designer`, embarqué dans le paquet publié (copié au build) ;
+ * 2. `packages/designer/dist`, dans le monorepo.
+ */
+const DESIGNER_CANDIDATES = [
+  fileURLToPath(new URL('./designer', import.meta.url)),
+  fileURLToPath(new URL('../../designer/dist', import.meta.url)),
+]
 
 const isDir = (path: string): Promise<boolean> =>
   stat(path).then(
@@ -36,13 +44,18 @@ const isDir = (path: string): Promise<boolean> =>
     () => false,
   )
 
+async function defaultDesignerDir(): Promise<string> {
+  for (const dir of DESIGNER_CANDIDATES) if (await isDir(dir)) return dir
+  return DESIGNER_CANDIDATES[0] as string
+}
+
 export async function startBridge(options: BridgeOptions): Promise<BridgeHandle> {
   const log = options.log ?? (() => undefined)
   const project = resolve(options.project)
   const config = await readConfig(project)
   const appPort = options.appPort ?? config.appPort
   const wanted = options.port ?? config.port
-  const designerDir = resolve(options.designerDir ?? DEFAULT_DESIGNER_DIR)
+  const designerDir = resolve(options.designerDir ?? (await defaultDesignerDir()))
 
   let port = wanted
   // `hub` est affecté avant tout événement du watcher (aucun tour de boucle entre les deux).

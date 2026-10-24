@@ -71,7 +71,7 @@ describe('concepteur non buildé', () => {
     try {
       const res = await raw(bridge.port, '/')
       expect(res.status).toBe(200)
-      expect(res.body).toContain('npm run build -w @delphia/designer')
+      expect(res.body).toContain('npm run build -w @vite-plugin-delph-ia/designer')
       expect((await raw(bridge.port, '/app.js')).status).toBe(404)
     } finally {
       await bridge.close()

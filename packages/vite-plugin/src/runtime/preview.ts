@@ -1,4 +1,4 @@
-import { dzSelector, type Geometry } from '@delphia/protocol'
+import { dzSelector, type Geometry } from '@vite-plugin-delph-ia/protocol'
 
 type Styled = HTMLElement | SVGElement
 type Saved = Map<string, { value: string; priority: string }>

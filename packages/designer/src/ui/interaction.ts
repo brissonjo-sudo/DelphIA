@@ -1,4 +1,4 @@
-import type { Geometry, Rect } from '@delphia/protocol'
+import type { Geometry, Rect } from '@vite-plugin-delph-ia/protocol'
 import type { Actions } from '../actions.js'
 import { computeDrag } from '../core/drag.js'
 import { hitTest, snapTargets } from '../core/elements.js'

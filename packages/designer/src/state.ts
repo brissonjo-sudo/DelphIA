@@ -4,7 +4,7 @@ import {
   type Geometry,
   type OverridesDoc,
   type Rect,
-} from '@delphia/protocol'
+} from '@vite-plugin-delph-ia/protocol'
 import type { Guide } from './core/snap.js'
 import type { BridgeStatus } from './io/bridge-client.js'
 

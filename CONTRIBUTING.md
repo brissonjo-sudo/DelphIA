@@ -35,7 +35,7 @@ Le typecheck du mod cherche la déclaration `claude-code` écrite par le moteur 
   séparée de l'IO et du DOM.
 - **`packages/protocol` reste sans dépendance.** Le mod en embarque une copie
   (`packages/mod/hooks/vendor/protocol/`) : après avoir modifié le protocole, lancez
-  `npm run build -w @delphia/protocol && npm run sync-protocol -w @delphia/mod` et committez la
+  `npm run build -w @vite-plugin-delph-ia/protocol && npm run sync-protocol -w @vite-plugin-delph-ia/mod` et committez la
   copie (un test échoue si elle est périmée).
 - **Toute entrée passe par un `parse*` du protocole** (WebSocket, `postMessage`, fichiers, argv).
   Un id `data-dz-id` n'entre jamais dans du CSS sans `dzSelector`. Le pont n'écoute que sur
@@ -51,7 +51,7 @@ Le typecheck du mod cherche la déclaration `claude-code` écrite par le moteur 
   logique nouvelle, un test ; pour un correctif, un test qui échoue sans lui.
 - **Mod** : les tests du moteur sont dans `packages/mod/test-mod/` et se lancent avec
   `claude plugin test packages/mod` (Claude Code ≥ 2.1.308), ou
-  `npm run test:mod -w @delphia/mod`. Le test Vitest du mod est nommé `*.spec.ts` pour que
+  `npm run test:mod -w @vite-plugin-delph-ia/mod`. Le test Vitest du mod est nommé `*.spec.ts` pour que
   `plugin test` ne l'exécute pas. Validation du manifeste : `claude plugin validate .` (le
   `marketplace.json` de la racine) et `claude plugin validate packages/mod`.
 - La CI (`.github/workflows/ci.yml`) lance `npm ci`, `npm run build` et `npm run check` sous

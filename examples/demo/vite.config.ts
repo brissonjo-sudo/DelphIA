@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import delphia from '@delphia/vite-plugin'
+import delphia from '@vite-plugin-delph-ia/vite-plugin'
 
 // Conventions Tauri 2 : port fixe (devUrl), échec si occupé, pas d'effacement du terminal.
 export default defineConfig({

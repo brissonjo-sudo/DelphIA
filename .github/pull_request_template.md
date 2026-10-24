@@ -14,7 +14,7 @@
 - [ ] `npm run check` passe (typecheck, lint, format, tests)
 - [ ] Tests ajoutés ou mis à jour
 - [ ] Si le mod change : `claude plugin test packages/mod` et `claude plugin validate packages/mod` (Claude Code ≥ 2.1.308)
-- [ ] Si le protocole change : copie du mod resynchronisée (`npm run sync-protocol -w @delphia/mod`)
+- [ ] Si le protocole change : copie du mod resynchronisée (`npm run sync-protocol -w @vite-plugin-delph-ia/mod`)
 - [ ] `CHANGELOG.md` mis à jour ; ADR ajouté si décision d'architecture
 
 ## Points d'attention

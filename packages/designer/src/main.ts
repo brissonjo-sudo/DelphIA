@@ -1,4 +1,8 @@
-import type { ClientToBridge, OverridesDoc, RuntimeToDesigner } from '@delphia/protocol'
+import type {
+  ClientToBridge,
+  OverridesDoc,
+  RuntimeToDesigner,
+} from '@vite-plugin-delph-ia/protocol'
 import { createActions } from './actions.js'
 import { createBridgeClient, type BridgeCallbacks, type BridgeClient } from './io/bridge-client.js'
 import { bridgeSocketUrl, loadConfig } from './io/config.js'

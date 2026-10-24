@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { wrap, type RuntimeToDesigner } from '@delphia/protocol'
+import { wrap, type RuntimeToDesigner } from '@vite-plugin-delph-ia/protocol'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { startCssLive } from '../src/runtime/css-live.js'
 import { startIframeRuntime } from '../src/runtime/iframe-runtime.js'
