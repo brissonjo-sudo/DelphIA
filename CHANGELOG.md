@@ -4,6 +4,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+## [0.1.0] - 2026-10-24
+
+Première version publiée sur npm : `@vite-plugin-delph-ia/protocol`,
+`@vite-plugin-delph-ia/vite-plugin`, `@vite-plugin-delph-ia/bridge` (0.1.0). Installation
+vérifiée depuis le registre dans un projet vide.
+
 ### Ajouté
 
 - Socle du monorepo (npm workspaces, TypeScript strict, Vitest, ESLint, Prettier).
