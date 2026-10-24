@@ -4,12 +4,15 @@ import type {
   RuntimeToDesigner,
 } from '@vite-plugin-delph-ia/protocol'
 import { createActions } from './actions.js'
+import { createBakeController } from './bake-controller.js'
 import { createBridgeClient, type BridgeCallbacks, type BridgeClient } from './io/bridge-client.js'
 import { bridgeSocketUrl, loadConfig } from './io/config.js'
 import { createMockBridge, type MockBridge } from './io/mock-bridge-client.js'
 import { createMockRuntime, type MockRuntime } from './io/mock-runtime-link.js'
 import { createRuntimeLink, type RuntimeLink } from './io/runtime-link.js'
 import { createStore, initialState } from './state.js'
+import { pruneSelection, primaryOf } from './core/selection.js'
+import { createBakeBar } from './ui/bake-bar.js'
 import { createElementList } from './ui/element-list.js'
 import { createInspector } from './ui/inspector.js'
 import { attachInteraction } from './ui/interaction.js'
@@ -20,11 +23,12 @@ import { createToolbar } from './ui/toolbar.js'
 
 const PING_MS = 2000
 const SILENCE_MS = 6000
+const TICK_MS = 500
 
 declare global {
   interface Window {
     /** Exposé en mode démo seulement, pour les vérifications automatisées. */
-    __delphiaMock?: { sent: ClientToBridge[]; doc: MockBridge['doc'] }
+    __delphiaMock?: { sent: ClientToBridge[]; doc: MockBridge['doc']; bake: MockBridge['bake'] }
   }
 }
 
@@ -55,8 +59,14 @@ function main(): void {
     { send: m => runtime.send(m), dispose: () => runtime.dispose() },
   )
 
+  const bakeCtl = createBakeController(
+    store,
+    { send: m => bridge.send(m), close: () => bridge.close() },
+    { send: m => runtime.send(m), dispose: () => runtime.dispose() },
+  )
   const renders = [
     createToolbar(shell.toolbar, actions),
+    createBakeBar(shell.bakeBar, actions),
     createElementList(shell.list, actions),
     createInspector(shell.inspector, actions, store.get),
     createStatusBar(shell.status),
@@ -74,8 +84,13 @@ function main(): void {
     onStatus: status => store.set({ bridge: status }),
     onMessage: m => {
       if (m.type === 'bridge:error') store.set({ bridgeError: m.message })
-      else {
+      else if (m.type === 'bake:state') {
+        store.set({ bake: m.bake })
+        if (m.bake.current?.status === 'applied') mockRuntime?.bake(m.bake.current.items)
+        bakeCtl.onBake()
+      } else {
         store.set({ overrides: m.doc, bridgeError: null })
+        bakeCtl.onOverrides()
         mockRuntime?.setOverrides(m.doc)
       }
     },
@@ -88,13 +103,19 @@ function main(): void {
       runtime.send({ type: 'designer:measure' })
       return
     }
-    const s = store.get()
+    const ids = pruneSelection(
+      store.get().selectedIds,
+      m.elements.map(e => e.id),
+    )
     store.set({
       appConnected: true,
       measured: true,
       elements: m.elements,
-      selectedId: m.elements.some(e => e.id === s.selectedId) ? s.selectedId : null,
+      selectedIds: ids,
+      selectedId: primaryOf(ids),
     })
+    actions.onMeasured()
+    bakeCtl.onElements()
   }
 
   let mockRuntime: MockRuntime | null = null
@@ -104,7 +125,7 @@ function main(): void {
     mockRuntime = createMockRuntime(shell.viewport, onRuntime)
     runtime = mockRuntime
     store.set({ appUrl: 'mock://app' })
-    window.__delphiaMock = { sent: mb.sent, doc: mb.doc }
+    window.__delphiaMock = { sent: mb.sent, doc: mb.doc, bake: mb.bake }
   } else {
     void loadConfig().then(cfg => {
       if (!cfg.ok) return store.set({ fatal: `Configuration illisible : ${cfg.errors[0]}` })
@@ -124,6 +145,7 @@ function main(): void {
     if (Date.now() - lastSeen > SILENCE_MS) store.set({ appConnected: false })
     else runtime.send({ type: 'designer:measure' })
   }, PING_MS)
+  setInterval(bakeCtl.tick, TICK_MS)
 }
 
 main()

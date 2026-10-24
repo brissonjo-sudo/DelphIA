@@ -57,6 +57,8 @@ function r(x: number, y: number, width: number, height: number): Rect {
 export interface MockRuntime extends RuntimeLink {
   /** Reproduit l'effet du CSS de surcouche généré par le plugin Vite. */
   setOverrides(doc: OverridesDoc): void
+  /** Simule le code modifié par Claude : la géométrie devient celle de l'app, sans surcouche. */
+  bake(items: readonly { id: string; geometry: Geometry }[]): void
 }
 
 export function createMockRuntime(
@@ -77,7 +79,9 @@ export function createMockRuntime(
 
   let overrides: OverridesDoc['elements'] = {}
   const previews = new Map<string, Geometry>()
-  const geometryOf = (id: string): Geometry => previews.get(id) ?? overrides[id] ?? {}
+  const baked = new Map<string, Geometry>()
+  const geometryOf = (id: string): Geometry =>
+    previews.get(id) ?? overrides[id] ?? baked.get(id) ?? {}
 
   /** Rectangle visible : le `translate` d'un parent entraîne ses enfants, pas sa taille. */
   function measure(n: MockNode): Rect {
@@ -129,6 +133,9 @@ export function createMockRuntime(
     setOverrides(doc) {
       overrides = doc.elements
       refresh()
+    },
+    bake(items) {
+      for (const it of items) baked.set(it.id, it.geometry)
     },
     dispose() {
       root.remove()

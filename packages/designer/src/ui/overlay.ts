@@ -14,6 +14,7 @@ export function renderOverlay(overlay: HTMLElement, s: AppState): void {
     if (pinned.has(el.id)) cls.push('pinned')
     if (el.id === s.hoverId) cls.push('hover')
     if (el.id === s.selectedId) cls.push('selected')
+    else if (s.selectedIds.includes(el.id)) cls.push('multi')
     const frame = h('div', { class: cls.join(' ') })
     place(frame, rect.x, rect.y, rect.width, rect.height)
     if (el.id === s.selectedId) {
