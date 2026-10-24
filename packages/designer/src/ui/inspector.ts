@@ -1,6 +1,7 @@
 import { GEOMETRY_KEYS, type GeometryKey, type GeometryPatch } from '@vite-plugin-delph-ia/protocol'
 import type { Actions } from '../actions.js'
 import { parseField } from '../core/fields.js'
+import { canBake, historyLines } from '../core/bake-flow.js'
 import type { AppState } from '../state.js'
 import { h } from './dom.js'
 
@@ -52,13 +53,44 @@ export function createInspector(
     const id = getState().selectedId
     if (id) actions.clear(id)
   })
-  container.append(title, empty, ident, form, error, release)
+  const multi = h('p', { class: 'hint' })
+  const bakeBtn = h('button', { type: 'button', class: 'btn primary' }, 'Figer')
+  bakeBtn.addEventListener('click', actions.bake)
+  const bakeHint = h(
+    'p',
+    { class: 'hint' },
+    'Fige dans le code les éléments sélectionnés qui sont épinglés ; les autres sont ignorés.',
+  )
+  const histTitle = h('h2', { class: 'panel-title' }, 'Figeages récents')
+  const hist = h('ul', { class: 'list history', 'aria-label': 'Figeages récents' })
+  container.append(
+    title,
+    empty,
+    ident,
+    multi,
+    form,
+    error,
+    release,
+    bakeBtn,
+    bakeHint,
+    histTitle,
+    hist,
+  )
 
   function render(s: AppState): void {
     const el = s.elements.find(e => e.id === s.selectedId)
     const has = el !== undefined
     empty.hidden = has
     form.hidden = ident.hidden = release.hidden = !has
+    const n = s.selectedIds.length
+    multi.hidden = n < 2
+    multi.textContent = `${n} éléments sélectionnés (principal : ${s.selectedId ?? ''}). Maj+clic pour ajouter ou retirer.`
+    const pinnedIds = new Set(Object.keys(s.overrides.elements))
+    bakeBtn.disabled = !canBake(s.selectedIds, pinnedIds, s.bake)
+    bakeBtn.textContent = `Figer (${s.selectedIds.filter(i => pinnedIds.has(i)).length} épinglé(s))`
+    const lines = historyLines(s.bake)
+    histTitle.hidden = hist.hidden = lines.length === 0
+    hist.replaceChildren(...lines.map(l => h('li', { class: 'row' }, l)))
     if (!el) {
       error.textContent = ''
       return

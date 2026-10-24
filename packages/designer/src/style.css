@@ -35,9 +35,10 @@ body {
 #app {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr) 260px;
-  grid-template-rows: 36px minmax(0, 1fr) 24px;
+  grid-template-rows: 36px auto minmax(0, 1fr) 24px;
   grid-template-areas:
     'tool tool tool'
+    'bake bake bake'
     'list stage insp'
     'status status status';
   height: 100vh;
@@ -408,4 +409,45 @@ button.row[aria-pressed='true'] {
   justify-content: center;
   color: #8a919b;
   background: repeating-linear-gradient(45deg, #e6e9ee, #e6e9ee 8px, #eef0f4 8px, #eef0f4 16px);
+}
+
+/* ── Figer ─────────────────────────────────────────────────────── */
+.btn.primary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn.primary:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+}
+.frame.multi {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.bake-bar {
+  grid-area: bake;
+  padding: 6px 10px;
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--line);
+}
+.bake-bar[data-kind='verified'] {
+  background: rgba(80, 200, 120, 0.18);
+}
+.bake-bar[data-kind='mismatch'] {
+  background: rgba(255, 122, 122, 0.18);
+}
+.bake-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bake-text {
+  flex: 1;
+}
+.bake-details {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+.history .row {
+  color: var(--muted);
 }

@@ -39,6 +39,13 @@ export function attachInteraction(overlay: HTMLElement, store: Store, actions: A
     const handle = (e.target as HTMLElement).dataset.handle
     let id = s.selectedId
     let mode: DragMode = 'move'
+    if (e.shiftKey && !isHandle(handle)) {
+      // Maj+clic : ajoute ou retire de la sélection, sans glisser.
+      const hit = hitTest(s.elements, p.x, p.y)
+      if (hit) actions.toggleSelect(hit.id)
+      e.preventDefault()
+      return
+    }
     if (isHandle(handle) && id) mode = handle
     else {
       id = hitTest(s.elements, p.x, p.y)?.id ?? null
