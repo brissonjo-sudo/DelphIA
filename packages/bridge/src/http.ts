@@ -1,8 +1,11 @@
 import { readFile, realpath, stat } from 'node:fs/promises'
 import type { IncomingMessage, RequestListener, ServerResponse } from 'node:http'
 import { extname, isAbsolute, join, relative } from 'node:path'
+import type { BakeRoutes } from './bake-routes.js'
 
 export interface HttpDeps {
+  /** Routes `POST` du mod (jeton) ; absentes = tout `POST` est refusé (405). */
+  bakeRoutes?: BakeRoutes
   designerDir: string
   appPort: number
   /** Port réellement écouté (connu après `listen`, utile avec le port 0 des tests). */
@@ -129,6 +132,7 @@ async function serveStatic(
 export function createRequestHandler(deps: HttpDeps): RequestListener {
   const handle = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     if (!hostAllowed(req.headers.host, deps.getPort())) return text(res, 403, 'Forbidden')
+    if (deps.bakeRoutes && (await deps.bakeRoutes(req, res))) return
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       res.setHeader('Allow', 'GET, HEAD')
       return text(res, 405, 'Method not allowed')
