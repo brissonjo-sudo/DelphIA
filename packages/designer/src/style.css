@@ -35,10 +35,9 @@ body {
 #app {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr) 260px;
-  grid-template-rows: 36px auto minmax(0, 1fr) 24px;
+  grid-template-rows: 36px minmax(0, 1fr) 24px;
   grid-template-areas:
     'tool tool tool'
-    'bake bake bake'
     'list stage insp'
     'status status status';
   height: 100vh;
@@ -112,9 +111,16 @@ body {
   grid-area: list;
   border-right: 1px solid var(--line);
 }
-.inspector-panel {
+.side {
   grid-area: insp;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-left: 1px solid var(--line);
+}
+.inspector-panel {
+  flex: 1;
+  min-height: 0;
 }
 .panel-title {
   margin: 8px 0 4px;
@@ -424,7 +430,6 @@ button.row[aria-pressed='true'] {
   box-shadow: 0 0 0 2px var(--accent);
 }
 .bake-bar {
-  grid-area: bake;
   padding: 6px 10px;
   background: var(--accent-soft);
   border-bottom: 1px solid var(--line);

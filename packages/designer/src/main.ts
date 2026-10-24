@@ -111,6 +111,7 @@ function main(): void {
       appConnected: true,
       measured: true,
       elements: m.elements,
+      appViewport: m.viewport,
       selectedIds: ids,
       selectedId: primaryOf(ids),
     })

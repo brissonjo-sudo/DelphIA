@@ -4,6 +4,25 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+### Ajouté
+
+- **« Figer »** (ADR 0003) : intégrer des ajustements de la surcouche dans le vrai code.
+  Concepteur : sélection multiple (Maj+clic), bouton « Figer », bandeau d'état, vérification
+  par la mesure (tolérance 1 px), « Rétablir », historique. Pont : `.delphia/bake.json`,
+  messages `bake:*`, routes `POST /api/bake/applied|cancel` protégées par jeton. Mod : option
+  `figer` (`preremplir` par défaut, ou `direct`), consigne détaillée ajoutée au prompt, éléments
+  déverrouillés pendant le tour, fichiers modifiés suivis, annulation si aucun fichier modifié.
+- `bridge.json` contient un jeton aléatoire régénéré à chaque démarrage.
+
+### Corrigé
+
+- Le bandeau du concepteur ne redimensionne plus l'app (il faussait la comparaison des mesures).
+
+### Vérifié
+
+- Cycle réel : demande depuis le concepteur → tour d'une vraie session Claude Code avec le mod
+  → surcouche retirée → mesure identique au visé (« Figé ») ; « Rétablir » après un écart.
+
 ## [0.1.0] - 2026-10-24
 
 Première version publiée sur npm : `@vite-plugin-delph-ia/protocol`,
