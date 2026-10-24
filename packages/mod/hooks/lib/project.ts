@@ -3,16 +3,18 @@
 import type { EngineInterface } from 'claude-code'
 
 import {
+  BAKE_FILE,
   BRIDGE_FILE,
   CONFIG_FILE,
   DEFAULT_APP_PORT,
   DEFAULT_BRIDGE_PORT,
   OVERRIDES_FILE,
+  parseBakeDoc,
   parseBridgeInfo,
   parseConfig,
   parseOverrides,
 } from '../vendor/protocol/index.js'
-import type { BridgeInfo, DelphiaConfig, OverridesDoc } from '../vendor/protocol/index.js'
+import type { BakeDoc, BridgeInfo, DelphiaConfig, OverridesDoc } from '../vendor/protocol/index.js'
 
 export type Ctx = EngineInterface
 
@@ -63,4 +65,14 @@ export async function readOverrides($: Ctx, cwd: string): Promise<OverridesDoc |
 export async function readBridgeInfo($: Ctx, cwd: string): Promise<BridgeInfo | undefined> {
   const parsed = parseBridgeInfo(await readJson($, join(cwd, BRIDGE_FILE)))
   return parsed.ok ? parsed.value : undefined
+}
+
+/** Contenu de bake.json (demande de figeage) ; undefined si absent ou invalide. */
+export async function readBake($: Ctx, cwd: string): Promise<BakeDoc | undefined> {
+  const raw = await readJson($, join(cwd, BAKE_FILE))
+  if (raw === undefined) return undefined
+  const parsed = parseBakeDoc(raw)
+  if (parsed.ok) return parsed.value
+  debug($, `${BAKE_FILE} invalide : ${parsed.errors.join('; ')}`)
+  return undefined
 }

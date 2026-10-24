@@ -25,11 +25,25 @@ export type DelphiaBridgeState = {
   detail: string | null
 }
 
+/** Tour de figeage en cours (« Figer », ADR 0003). */
+export type DelphiaBakeActive = {
+  bakeId: string
+  /** Ids des éléments à figer : déverrouillés dans le prompt pendant le tour. */
+  ids: string[]
+  /** Fichiers modifiés par Claude pendant le tour (relatifs au projet, `/`). */
+  files: string[]
+}
+
 declare module 'claude-code' {
   interface PluginState {
     delphia: {
       seen: DelphiaSeenDoc | null
       bridge: DelphiaBridgeState
+      /** Dernière demande de figeage proposée à l'utilisateur (évite de la reproposer). */
+      bakeSeen: string | null
+      bakeActive: DelphiaBakeActive | null
+      /** Résultat de la dernière notification au pont (affiché par /delphia). */
+      bakeLast: string | null
     }
   }
 }

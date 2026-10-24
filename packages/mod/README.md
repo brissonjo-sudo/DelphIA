@@ -8,6 +8,17 @@ existe à la racine du projet de la session.
 - `prompt.compose` : ajoute en dernière section la liste des éléments verrouillés.
 - `turn.start` : toast quand `revision` d'`overrides.json` a changé.
 
+## Figer (ADR 0003)
+
+Le concepteur écrit une demande dans `.delphia/bake.json` (statut `requested`). Cycle côté mod :
+
+1. **Détection** : `$.clock.every(1000)` (démarré à `session.start`) et `turn.start` lisent `bake.json`. Une demande `requested` jamais vue est proposée une seule fois.
+2. **Lancement** : option `figer` (userConfig, menu `/config`) : `preremplir` (défaut) met « Fige les ajustements DelphIA dans le code (demande bk-…) » dans la zone de saisie, vous validez par Entrée ; `direct` l'envoie sans attendre.
+3. **Tour** : le hook `prompt.submit` reconnaît l'identifiant de demande et ajoute la consigne détaillée en contexte ; pendant le tour, la section « géométrie verrouillée » exclut les éléments à figer ; les fichiers écrits avec succès (Write/Edit/MultiEdit/NotebookEdit) sont notés.
+4. **Fin de tour** (`turn.complete`) : réponse normale → `POST /api/bake/applied` (fichiers touchés) ; interruption, refus ou erreur → `POST /api/bake/cancel`. Jeton `x-delphia-token` lu dans `bridge.json`, sans `Origin`. Échec réseau : toast, jamais d'exception.
+
+`/delphia` affiche aussi la demande de figeage courante.
+
 ## Installation
 
 Dans une session Claude Code (terminal) :
