@@ -51,7 +51,40 @@ export function installWorld(on: On, files: Record<string, string>): World {
     world.statuses.push(e.text)
     return { value: undefined }
   })
+  on('clock.every', () => ({ value: undefined }))
   on('ui.log', () => ({ value: undefined }))
   on('command.register', (_, e) => ({ value: { command: e.name } }))
   return world
 }
+
+export const BAKE = `${CWD}/.delphia/bake.json`
+export const BRIDGE = `${CWD}/.delphia/bridge.json`
+export const TOKEN = 'ab'.repeat(16)
+export const BAKE_ID = 'bk-0123456789abcdef'
+export const bridgeInfo = (): string =>
+  JSON.stringify({
+    pid: 42,
+    port: 4999,
+    appPort: 1420,
+    startedAt: '2026-10-24T10:00:00.000Z',
+    token: TOKEN,
+  })
+
+export const bakeDoc = (status = 'requested', ids = ['save-btn', 'title']): string =>
+  JSON.stringify({
+    version: 1,
+    current: {
+      bakeId: BAKE_ID,
+      status,
+      createdAt: '2026-10-24T10:00:00.000Z',
+      updatedAt: '2026-10-24T10:00:00.000Z',
+      items: ids.map(id => ({
+        id,
+        geometry: { dx: 12, dy: -4 },
+        target: { x: 10, y: 20, width: 100, height: 40 },
+      })),
+      touchedFiles: [],
+      results: [],
+    },
+    history: [],
+  })

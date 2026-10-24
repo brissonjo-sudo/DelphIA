@@ -38,7 +38,13 @@ test("pont introuvable : statut explicite, rien n'est lancé", async ($, on) => 
 })
 
 test('pont déjà actif (bridge.json + /api/config) : pas de second lancement', async ($, on) => {
-  const info = { pid: 42, port: 4999, appPort: 1420, startedAt: '2026-10-24T10:00:00.000Z' }
+  const info = {
+    pid: 42,
+    port: 4999,
+    appPort: 1420,
+    startedAt: '2026-10-24T10:00:00.000Z',
+    token: 'a'.repeat(32),
+  }
   const world = installWorld(on, {
     [CONFIG]: '{}',
     [CLI]: '',

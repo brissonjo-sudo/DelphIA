@@ -4,5 +4,14 @@
   "description": "Pont entre Claude Code et le concepteur visuel DelphIA : lance le serveur pont, protège les ajustements manuels (.delphia/) et rappelle à Claude quels éléments sont verrouillés.",
   "license": "MIT",
   "author": { "name": "Murukan" },
+  "userConfig": {
+    "figer": {
+      "type": "string",
+      "title": "Figer",
+      "description": "Comment lancer le tour de Claude quand le concepteur demande de figer des ajustements : préremplir la zone de saisie (vous validez) ou envoyer directement.",
+      "options": ["preremplir", "direct"],
+      "default": "preremplir"
+    }
+  },
   "types": "./types/index.d.ts"
 }
