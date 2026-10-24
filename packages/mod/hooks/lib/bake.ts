@@ -150,11 +150,17 @@ export async function finishBake($: Ctx, cwd: string, reason: string): Promise<v
     if (!info) {
       return await report($, 'DelphIA : bridge.json absent ou sans jeton valide, pont non prévenu')
     }
-    const applied = reason === 'answer'
+    // Aucun fichier modifié : retirer la surcouche ferait disparaître les ajustements de l'écran
+    // sans qu'ils soient dans le code. On annule plutôt.
+    const applied = reason === 'answer' && active.files.length > 0
     const route = applied ? BAKE_APPLIED_ROUTE : BAKE_CANCEL_ROUTE
+    const note =
+      reason === 'answer'
+        ? 'Claude a répondu sans modifier de fichier'
+        : `Tour de Claude terminé sans succès (${reason})`
     const body = applied
       ? { bakeId: active.bakeId, touchedFiles: active.files }
-      : { bakeId: active.bakeId, note: `Tour de Claude terminé sans succès (${reason})` }
+      : { bakeId: active.bakeId, note }
     const res = await $.http.fetch(`http://127.0.0.1:${info.port}${route}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', [BRIDGE_TOKEN_HEADER]: info.token },
@@ -165,7 +171,7 @@ export async function finishBake($: Ctx, cwd: string, reason: string): Promise<v
       res.ok
         ? applied
           ? `DelphIA : figeage transmis (${active.files.length} fichier(s))`
-          : `DelphIA : figeage annulé (${reason})`
+          : `DelphIA : figeage annulé (${note})`
         : `DelphIA : le pont a refusé la notification du figeage (HTTP ${res.status})`,
     )
   } catch (err) {

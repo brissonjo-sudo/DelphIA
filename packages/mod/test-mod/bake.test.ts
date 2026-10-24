@@ -191,6 +191,17 @@ test('tour interrompu : POST cancel avec la raison', async ($, on) => {
   expect(String(calls.posts[0]?.body.note)).toContain('aborted')
 })
 
+test('réponse sans fichier modifié : POST cancel, la surcouche reste', async ($, on) => {
+  installWorld(on, project)
+  const calls = wire(on)
+  await $.session.start(START)
+  await type($, TRIGGER)
+  await $.turn.complete(complete('answer'))
+  expect(calls.posts.length).toBe(1)
+  expect(calls.posts[0]?.url).toBe('http://127.0.0.1:4999/api/bake/cancel')
+  expect(String(calls.posts[0]?.body.note)).toContain('sans modifier de fichier')
+})
+
 test('bridge.json sans jeton : aucun appel, toast', async ($, on) => {
   const info = JSON.parse(bridgeInfo()) as Record<string, unknown>
   delete info.token
