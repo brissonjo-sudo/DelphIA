@@ -1,0 +1,14 @@
+{
+  "name": "@delphia/mod",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mod Claude Code de DelphIA (hooks fonctionnels).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "sync-protocol": "node scripts/sync-protocol.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "validate": "node scripts/claude.mjs plugin validate .",
+    "test:mod": "node scripts/claude.mjs plugin test ."
+  }
+}

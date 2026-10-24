@@ -1,0 +1,34 @@
+{
+  "name": "delphia",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Concepteur visuel façon Delphi pour Claude Code : affichage en direct, ajustement au pixel, pont vers Claude.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "npm run build -w @delphia/protocol && npm run build -w @delphia/vite-plugin && npm run build -w @delphia/bridge && npm run build -w @delphia/designer && npm run build -w @delphia/demo",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "delphia": "node packages/bridge/dist/cli.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.5",
+    "eslint": "10.13.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  }
+}

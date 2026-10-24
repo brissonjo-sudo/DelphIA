@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+# Généré par le moteur Claude Code dans le dossier du mod
+packages/mod/.claude-plugin/types/
+# Tauri
+src-tauri/target/
+# Ajustements et état runtime des projets d'exemple
+examples/**/.delphia/

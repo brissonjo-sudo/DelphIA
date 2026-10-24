@@ -1,0 +1,8 @@
+dist
+coverage
+node_modules
+packages/mod/.claude-plugin/types
+LICENSE
+packages/mod/hooks/vendor
+**/src-tauri/target
+**/src-tauri/gen
