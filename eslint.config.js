@@ -7,6 +7,7 @@ export default tseslint.config(
       '**/dist/**',
       '**/coverage/**',
       '**/node_modules/**',
+      '**/src-tauri/target/**',
       'packages/mod/.claude-plugin/types/**',
     ],
   },
