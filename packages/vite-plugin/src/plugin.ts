@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { overridesToCss } from '@delphia/protocol'
+import { overridesToCss } from '@vite-plugin-delphia/protocol'
 import type { Plugin, ViteDevServer } from 'vite'
 import { resolveDesignerOrigins } from './config-source.js'
 import { overridesPath, readOverrides } from './overrides-source.js'
@@ -81,7 +81,7 @@ export function delphia(options: DelphiaOptions = {}): Plugin {
       if (id === RUNTIME_ID) return RESOLVED_RUNTIME_ID
       // Le runtime importe le protocole par son nom : on le sert comme source, sans pré-bundling
       // (qui déclencherait un rechargement complet au premier chargement).
-      if (id === '@delphia/protocol' && importer && isInside(runtimeDir, importer)) {
+      if (id === '@vite-plugin-delphia/protocol' && importer && isInside(runtimeDir, importer)) {
         return protocolEntry()
       }
       return null

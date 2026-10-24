@@ -1,4 +1,4 @@
-import { isRecord } from '@delphia/protocol'
+import { isRecord } from '@vite-plugin-delphia/protocol'
 import { OVERRIDES_EVENT, type HotLike } from './hot.js'
 
 /**

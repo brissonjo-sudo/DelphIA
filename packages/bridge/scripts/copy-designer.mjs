@@ -9,7 +9,7 @@ const target = fileURLToPath(new URL('../dist/designer', import.meta.url))
 
 if (!existsSync(`${source}/index.html`)) {
   console.error(
-    `Concepteur non buildé (${source}) : lancez d'abord npm run build -w @delphia/designer`,
+    `Concepteur non buildé (${source}) : lancez d'abord npm run build -w @vite-plugin-delphia/designer`,
   )
   process.exit(1)
 }

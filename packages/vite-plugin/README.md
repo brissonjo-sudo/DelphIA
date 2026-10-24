@@ -1,4 +1,4 @@
-# @delphia/vite-plugin
+# @vite-plugin-delphia/vite-plugin
 
 Plugin Vite à installer dans l'application cible. Il applique les ajustements manuels du
 concepteur DelphIA (`.delphia/overrides.json`) et, en développement, mesure les éléments
@@ -9,7 +9,7 @@ concepteur DelphIA (`.delphia/overrides.json`) et, en développement, mesure les
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
-import delphia from '@delphia/vite-plugin'
+import delphia from '@vite-plugin-delphia/vite-plugin'
 
 export default defineConfig({
   plugins: [delphia()],

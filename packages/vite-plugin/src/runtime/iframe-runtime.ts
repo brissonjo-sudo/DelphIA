@@ -1,4 +1,4 @@
-import { parseDesignerToRuntime, wrap, type RuntimeToDesigner } from '@delphia/protocol'
+import { parseDesignerToRuntime, wrap, type RuntimeToDesigner } from '@vite-plugin-delphia/protocol'
 import { collectElements } from './elements.js'
 import type { HotLike } from './hot.js'
 import { guessParentOrigin, pickTargetOrigin } from './origin.js'

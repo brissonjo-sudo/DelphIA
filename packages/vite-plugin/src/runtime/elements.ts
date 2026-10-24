@@ -1,4 +1,4 @@
-import { DZ_ATTR, isDzId, type ElementInfo } from '@delphia/protocol'
+import { DZ_ATTR, isDzId, type ElementInfo } from '@vite-plugin-delphia/protocol'
 
 export interface Collected {
   elements: ElementInfo[]

@@ -10,7 +10,7 @@ import {
   parseOverrides,
   type GeometryPatch,
   type OverridesDoc,
-} from '@delphia/protocol'
+} from '@vite-plugin-delphia/protocol'
 
 export interface Store {
   current(): OverridesDoc

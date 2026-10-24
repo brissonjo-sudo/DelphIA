@@ -1,4 +1,4 @@
-import { fail, isRecord, ok, type Result } from '@delphia/protocol'
+import { fail, isRecord, ok, type Result } from '@vite-plugin-delphia/protocol'
 
 export interface DesignerConfig {
   appUrl: string

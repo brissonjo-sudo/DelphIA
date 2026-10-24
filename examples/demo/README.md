@@ -4,7 +4,7 @@ Gestionnaire de tâches (Vite + TypeScript, DOM natif) : exemple et banc d'essai
 
 ## Lancement dans le navigateur (concepteur)
 
-1. `npm run dev -w @delphia/demo` (port 1420, `strictPort`).
+1. `npm run dev -w @vite-plugin-delphia/demo` (port 1420, `strictPort`).
 2. Pont DelphIA sur ce dossier : `node packages/bridge/dist/cli.js --project examples/demo`.
 3. Ouvrir le concepteur sur `http://127.0.0.1:4317`.
 
@@ -12,10 +12,10 @@ Gestionnaire de tâches (Vite + TypeScript, DOM natif) : exemple et banc d'essai
 
 Depuis la racine du dépôt :
 
-- Développement : `npm run tauri dev -w @delphia/demo` (lance `npm run dev`, ouvre la fenêtre sur `http://localhost:1420`).
-- Exécutable Windows : `npm run tauri build -w @delphia/demo` (installeurs NSIS/MSI dans `src-tauri/target/release/bundle/`). Pour l'exécutable seul, sans installeur : `npm run tauri build -w @delphia/demo -- --no-bundle` → `src-tauri/target/release/delphia-demo.exe`.
+- Développement : `npm run tauri dev -w @vite-plugin-delphia/demo` (lance `npm run dev`, ouvre la fenêtre sur `http://localhost:1420`).
+- Exécutable Windows : `npm run tauri build -w @vite-plugin-delphia/demo` (installeurs NSIS/MSI dans `src-tauri/target/release/bundle/`). Pour l'exécutable seul, sans installeur : `npm run tauri build -w @vite-plugin-delphia/demo -- --no-bundle` → `src-tauri/target/release/delphia-demo.exe`.
 
-Les ajustements `.delphia/overrides.json` sont injectés par `@delphia/vite-plugin` dans `<style data-delphia>` ; ils sont donc embarqués dans l'exécutable au build.
+Les ajustements `.delphia/overrides.json` sont injectés par `@vite-plugin-delphia/vite-plugin` dans `<style data-delphia>` ; ils sont donc embarqués dans l'exécutable au build.
 
 ### Prérequis (Windows)
 

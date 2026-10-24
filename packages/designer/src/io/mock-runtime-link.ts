@@ -5,7 +5,7 @@ import type {
   OverridesDoc,
   Rect,
   RuntimeToDesigner,
-} from '@delphia/protocol'
+} from '@vite-plugin-delphia/protocol'
 import type { RuntimeLink } from './runtime-link.js'
 
 interface MockNode {

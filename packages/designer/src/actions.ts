@@ -1,4 +1,4 @@
-import type { Geometry, GeometryPatch } from '@delphia/protocol'
+import type { Geometry, GeometryPatch } from '@vite-plugin-delphia/protocol'
 import type { BridgeClient } from './io/bridge-client.js'
 import type { RuntimeLink } from './io/runtime-link.js'
 import type { Store } from './state.js'

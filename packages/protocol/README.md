@@ -1,9 +1,9 @@
-# @delphia/protocol
+# @vite-plugin-delphia/protocol
 
 Contrat partagé de [DelphIA](https://github.com/brissonjo-sudo/DelphIA), le concepteur visuel
 façon Delphi pour Claude Code. Sans dépendance.
 
-Ce paquet est utilisé par `@delphia/vite-plugin`, `@delphia/bridge` et le mod Claude Code. Vous
+Ce paquet est utilisé par `@vite-plugin-delphia/vite-plugin`, `@vite-plugin-delphia/bridge` et le mod Claude Code. Vous
 n'avez normalement pas à l'installer vous-même.
 
 ## Contenu

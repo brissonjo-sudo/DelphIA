@@ -1,5 +1,5 @@
 {
-  "name": "@delphia/vite-plugin",
+  "name": "@vite-plugin-delphia/vite-plugin",
   "version": "0.1.0",
   "description": "Plugin Vite DelphIA : CSS de surcouche des ajustements manuels et runtime de mesure pour le concepteur.",
   "keywords": [
@@ -46,7 +46,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@delphia/protocol": "^0.1.0"
+    "@vite-plugin-delphia/protocol": "^0.1.0"
   },
   "peerDependencies": {
     "vite": "^8.0.0"

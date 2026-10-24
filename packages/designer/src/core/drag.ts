@@ -1,4 +1,4 @@
-import type { Geometry, Rect } from '@delphia/protocol'
+import type { Geometry, Rect } from '@vite-plugin-delphia/protocol'
 import {
   geometryPatch,
   mergeGeometry,

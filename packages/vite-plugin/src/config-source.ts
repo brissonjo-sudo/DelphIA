@@ -6,7 +6,7 @@ import {
   DEFAULT_BRIDGE_PORT,
   parseConfig,
   type DelphiaConfig,
-} from '@delphia/protocol'
+} from '@vite-plugin-delphia/protocol'
 
 export type Warn = (message: string) => void
 

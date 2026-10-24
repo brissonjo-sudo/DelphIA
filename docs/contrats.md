@@ -2,14 +2,14 @@
 
 Ce document fige les interfaces entre paquets. Chaque paquet s'y conforme ; toute
 divergence se discute avant d'être codée. Les types et validateurs font foi dans
-`packages/protocol/src` (`import { … } from '@delphia/protocol'`).
+`packages/protocol/src` (`import { … } from '@vite-plugin-delphia/protocol'`).
 
 ## 0. Règles communes
 
 - TypeScript strict (`tsconfig.base.json`), ESM, pas de `any`.
 - Toute donnée entrante (fichier, WebSocket, `postMessage`, argv) passe par un `parse*` du
   protocole, ou par une validation explicite si le protocole n'en fournit pas.
-- `protocol` reste sans dépendance. Il faut l'avoir buildé (`npm run build -w @delphia/protocol`)
+- `protocol` reste sans dépendance. Il faut l'avoir buildé (`npm run build -w @vite-plugin-delphia/protocol`)
   avant de l'importer : ses `exports` pointent sur `dist/`.
 - Tests Vitest dans `packages/<paquet>/test/*.test.ts` (inclus par `vitest.config.ts` racine).
 - Ne pas committer `package-lock.json` depuis un worktree : l'intégrateur le régénère.
@@ -27,7 +27,7 @@ Un projet est « DelphIA » quand il contient `delphia.config.json` à sa racine
 └─ .delphia/bridge.json       écrit par le pont au démarrage, supprimé à l'arrêt (BridgeInfo)
 ```
 
-## 2. `@delphia/vite-plugin` (dans l'app cible)
+## 2. `@vite-plugin-delphia/vite-plugin` (dans l'app cible)
 
 - Export par défaut : `delphia(options?: { root?: string; designerOrigins?: string[] }): Plugin`.
 - Usage : `plugins: [delphia()]`. Aucune autre modification de l'app.
@@ -52,7 +52,7 @@ Un projet est « DelphIA » quand il contient `delphia.config.json` à sa racine
 border-box` si taille) ; `geometry: null` retire ces propriétés inline. **La géométrie de
     l'aperçu est complète** (valeurs finales de l'ajustement, pas un delta).
 
-## 3. `@delphia/bridge` (serveur Node local)
+## 3. `@vite-plugin-delphia/bridge` (serveur Node local)
 
 - CLI : `node packages/bridge/dist/cli.js --project <dir> [--designer-dir <dir>]`.
   Ports lus dans `<dir>/delphia.config.json` (absent → valeurs par défaut).
@@ -74,7 +74,7 @@ border-box` si taille) ; `geometry: null` retire ces propriétés inline. **La g
   écritures.
 - Écrit `bridge.json` (`BridgeInfo`) au démarrage ; le supprime sur `SIGINT`/`SIGTERM`/sortie.
 
-## 4. `@delphia/designer` (UI navigateur, Vite + TypeScript sans framework)
+## 4. `@vite-plugin-delphia/designer` (UI navigateur, Vite + TypeScript sans framework)
 
 - Servi par le pont. Lit `/api/config`, affiche l'app dans une `<iframe src=appUrl>`, se
   connecte à `ws://<host>/ws`.
@@ -95,7 +95,7 @@ border-box` si taille) ; `geometry: null` retire ces propriétés inline. **La g
 
 - Actif seulement si `<cwd>/delphia.config.json` existe.
 - `session.start` : lance le pont par `$.process.spawn({ argv: ['node', <cli>, '--project', cwd] })`.
-  `<cli>` : `<cwd>/node_modules/@delphia/bridge/dist/cli.js`, sinon
+  `<cli>` : `<cwd>/node_modules/@vite-plugin-delphia/bridge/dist/cli.js`, sinon
   `${$.plugin.root}/../bridge/dist/cli.js`. Statut affiché (`$.ui.status`).
 - `tool.call` (Write, Edit, MultiEdit, NotebookEdit) : refuse toute cible où
   `isProtectedPath` est vrai ; refuse une édition qui fait disparaître un `data-dz-id`

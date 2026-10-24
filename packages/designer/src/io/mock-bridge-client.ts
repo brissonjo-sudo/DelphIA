@@ -3,7 +3,7 @@ import {
   emptyOverrides,
   type ClientToBridge,
   type OverridesDoc,
-} from '@delphia/protocol'
+} from '@vite-plugin-delphia/protocol'
 import type { BridgeCallbacks, BridgeClient } from './bridge-client.js'
 
 export interface MockBridge extends BridgeClient {

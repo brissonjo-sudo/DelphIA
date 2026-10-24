@@ -2,7 +2,7 @@ import { expect, test } from 'claude-code/testing'
 
 import { CONFIG, CWD, installWorld } from './world'
 
-const CLI = `${CWD}/node_modules/@delphia/bridge/dist/cli.js`
+const CLI = `${CWD}/node_modules/@vite-plugin-delphia/bridge/dist/cli.js`
 const START = { cwd: CWD, surface: null, isInteractive: false } as const
 
 test("session.start lance le pont et affiche l'URL du concepteur", async ($, on) => {

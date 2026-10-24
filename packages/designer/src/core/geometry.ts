@@ -1,4 +1,9 @@
-import { GEOMETRY_KEYS, normalizeGeometry, type Geometry, type Rect } from '@delphia/protocol'
+import {
+  GEOMETRY_KEYS,
+  normalizeGeometry,
+  type Geometry,
+  type Rect,
+} from '@vite-plugin-delphia/protocol'
 
 /** Poignées de redimensionnement, nommées par les points cardinaux touchés. */
 export type Handle = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw'
