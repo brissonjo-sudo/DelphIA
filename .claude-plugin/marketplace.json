@@ -1,0 +1,12 @@
+{
+  "name": "delphia",
+  "owner": { "name": "Murukan" },
+  "description": "Concepteur visuel façon Delphi pour Claude Code (DelphIA).",
+  "plugins": [
+    {
+      "name": "delphia",
+      "source": "./packages/mod",
+      "description": "Mod Claude Code de DelphIA : lance le pont vers le concepteur visuel, protège .delphia/ et les éléments ajustés au pixel, et rappelle à Claude les éléments verrouillés."
+    }
+  ]
+}
