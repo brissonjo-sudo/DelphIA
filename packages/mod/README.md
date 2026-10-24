@@ -8,6 +8,17 @@ existe à la racine du projet de la session.
 - `prompt.compose` : ajoute en dernière section la liste des éléments verrouillés.
 - `turn.start` : toast quand `revision` d'`overrides.json` a changé.
 
+## Installation
+
+Dans une session Claude Code (terminal) :
+
+```text
+/plugin install delphia --marketplace brissonjo-sudo/DelphIA
+```
+
+Depuis un shell : `claude plugin install delphia --marketplace brissonjo-sudo/DelphIA`.
+Depuis ce dépôt, sans installation : `claude --plugin-dir packages/mod`.
+
 ## Développement
 
 - `npm run sync-protocol -w @delphia/mod` : recopie `packages/protocol/dist` dans `hooks/vendor/protocol/`
@@ -17,5 +28,5 @@ existe à la racine du projet de la session.
   `.claude-plugin/types/claude-code/index.d.ts`, ou le skill plugin-authoring livré avec Claude Code).
   Introuvable : avertissement, succès (`--strict` : échec).
 - `npm run validate -w @delphia/mod` / `npm run test:mod -w @delphia/mod` : `claude plugin validate|test` avec le binaire 2.1.308
-  (`CLAUDE=<chemin>` pour le changer). Les tests du moteur sont dans `test-mod/` ; `plugin test` exécute tous les `*.test.ts`, d'où
+  (`scripts/claude.mjs` : `CLAUDE=<chemin>`, sinon la version la plus récente de l'app desktop, sinon `claude` du PATH). Les tests du moteur sont dans `test-mod/` ; `plugin test` exécute tous les `*.test.ts`, d'où
   le test Vitest nommé `*.spec.ts`.
