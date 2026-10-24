@@ -123,7 +123,7 @@ input {
   grid-column: 2;
   grid-row: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(260px, 1fr) 300px;
   min-height: 0;
 }
 
@@ -133,6 +133,7 @@ input {
   list-style: none;
   overflow: auto;
   min-height: 0;
+  min-width: 0;
 }
 
 .tache {
@@ -153,6 +154,13 @@ input {
   background: var(--accent-doux);
 }
 
+.libelle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tache.terminee .libelle {
   color: var(--texte-doux);
   text-decoration: line-through;
@@ -169,6 +177,7 @@ input {
 }
 
 .panneau-detail {
+  min-width: 0;
   padding: 16px;
   border-left: 1px solid var(--bordure);
   background: var(--surface);
@@ -208,4 +217,76 @@ input {
   background: var(--surface);
   font-size: 12px;
   color: var(--texte-doux);
+}
+
+/* Moyen (600-899 px) : filtres | liste, détail sous la liste. */
+@media (max-width: 899.98px) {
+  .app {
+    grid-template-columns: 160px minmax(0, 1fr);
+  }
+
+  .contenu {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .panneau-detail {
+    border-top: 1px solid var(--bordure);
+    border-left: 0;
+  }
+}
+
+/* Étroit (< 600 px) : une colonne empilée, la page défile verticalement. */
+@media (max-width: 599.98px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .barre-outils {
+    flex-wrap: wrap;
+  }
+
+  .recherche {
+    order: 2;
+    flex: 1 1 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .barre-laterale {
+    grid-column: 1;
+    grid-row: 2;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid var(--bordure);
+  }
+
+  .titre-section {
+    margin: 0 6px 0 0;
+  }
+
+  .contenu {
+    grid-column: 1;
+    grid-row: 3;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+  }
+
+  .liste-taches {
+    max-height: 50vh;
+  }
+
+  .panneau-detail {
+    border-top: 1px solid var(--bordure);
+    border-left: 0;
+  }
+
+  .barre-etat {
+    grid-row: 4;
+  }
 }
