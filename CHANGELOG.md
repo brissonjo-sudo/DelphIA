@@ -21,3 +21,5 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - Mod Claude Code (`packages/mod`) : lancement du pont, garde des écritures sur `.delphia/` et
   des ids épinglés, verrous dans le prompt système, suivi de révision, commande `/delphia`.
 - Application de démonstration `examples/demo` (Gestionnaire de tâches, front Tauri 2).
+- Documentation d'usage (README, guide, CONTRIBUTING, SECURITY), CI GitHub Actions
+  (Windows et Linux, Node 22) et fichier marketplace `.claude-plugin/marketplace.json`.

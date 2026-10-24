@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Pas de build Rust/Tauri ici : trop long, et la démo est un front Vite seul.
+      # Pas de binaire Claude Code non plus : le typecheck du mod avertit et réussit quand
+      # la déclaration `claude-code` est introuvable ; les tests du moteur
+      # (`claude plugin test`) se lancent en local avec Claude Code >= 2.1.308.
+      - run: npm run check
