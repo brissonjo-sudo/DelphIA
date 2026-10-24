@@ -8,7 +8,7 @@
 > keyboard. Your tweaks are stored in `.delphia/overrides.json` and applied as a CSS overlay, so
 > Claude never overwrites them. A Claude Code mod starts the local bridge, forbids Claude from
 > writing to `.delphia/` or removing a pinned id, and tells it which elements are locked.
-> Early access: not published on npm yet, usable from this monorepo; the mod needs Claude Code
+> Install: `npm install -D @delphia/vite-plugin @delphia/bridge` (Vite 8); the mod needs Claude Code
 > engine 2.1.308+. MIT licence. Docs are in French.
 
 ## En bref
@@ -85,13 +85,11 @@ Le dépôt contient [`.claude-plugin/marketplace.json`](.claude-plugin/marketpla
 déclare le mod `delphia` (source : `packages/mod`). Le mod ne s'active que dans un projet qui
 contient `delphia.config.json`.
 
-**Limite à connaître** : pour lancer le pont, le mod cherche son CLI dans
-`<projet>/node_modules/@delphia/bridge/dist/cli.js`, puis à côté de lui-même
-(`../bridge/dist/cli.js`, valable seulement quand le mod est chargé depuis ce dépôt). Comme
-`@delphia/bridge` n'est pas encore publié sur npm, une installation par la marketplace n'a en
-général aucun de ces deux chemins : le mod affiche alors « DelphIA : pont indisponible » et
-protège quand même `.delphia/` et les ids épinglés. Lancez le pont à la main
-(`npm run delphia -- --project <projet>` depuis ce dépôt).
+Pour lancer le pont, le mod cherche son CLI dans
+`<projet>/node_modules/@delphia/bridge/dist/cli.js` (installé à l'étape 2 ci-dessous), puis à
+côté de lui-même (`../bridge/dist/cli.js`, quand le mod est chargé depuis ce dépôt). S'il ne le
+trouve pas, il affiche « DelphIA : pont indisponible » et protège quand même `.delphia/` et les
+ids épinglés ; lancez alors le pont à la main (`npx delphia-bridge --project .`).
 
 Le mod nécessite le moteur Claude Code **2.1.308 ou plus** (hooks fonctionnels :
 `hooks/hooks.json` contient `{ "modules": ["./register.ts"] }`). Un `claude` plus ancien ne
@@ -108,7 +106,13 @@ sait pas charger ces modules.
    `port` : concepteur et WebSocket ; `appPort` : serveur Vite de l'app (1420 par défaut dans Tauri 2).
    Entiers entre 1024 et 65535, différents l'un de l'autre. Tout est facultatif.
 
-2. **Plugin Vite** dans `vite.config.ts` :
+2. **Paquets npm** (le pont embarque l'interface du concepteur) :
+
+   ```bash
+   npm install -D @delphia/vite-plugin @delphia/bridge
+   ```
+
+   Puis le **plugin Vite** dans `vite.config.ts` :
 
    ```ts
    import { defineConfig } from 'vite'
@@ -124,17 +128,18 @@ sait pas charger ces modules.
    respecte `^[a-z][a-z0-9-]{0,63}$` (minuscules, chiffres, tirets ; commence par une lettre).
    C'est Claude qui pose ces attributs, par exemple `<button data-dz-id="btn-new-task">`.
 
-4. Lancez l'app (`vite`), le pont (`npm run delphia -- --project <projet>`) et ouvrez le
-   concepteur. Le CSS d'ajustement est aussi injecté au `build` : le build Tauri l'embarque.
+4. Lancez l'app (`npx vite` ou `npm run tauri dev`) et ouvrez le concepteur
+   (`http://127.0.0.1:4317/`). Avec le mod, le pont démarre avec la session Claude Code ; sans
+   le mod : `npx delphia-bridge --project .`. Le CSS d'ajustement est aussi injecté au
+   `build` : le build Tauri l'embarque.
 
-Les paquets n'étant pas publiés, la façon vérifiée de les utiliser est de placer le projet dans
-les workspaces de ce monorepo, comme `examples/demo`
-(`"@delphia/vite-plugin": "*"` dans ses `devDependencies`). Une référence par chemin vers
-`packages/vite-plugin` depuis un projet extérieur n'a pas été testée.
+Ce parcours (paquets installés depuis leurs archives npm dans un projet extérieur au
+monorepo, concepteur, ajustement au clavier, build, mod qui lance le pont depuis
+`node_modules`) a été vérifié avant publication. Plugin Vite : Vite 8.
 
 ## Limites connues
 
-- **Pas encore publié sur npm** : usage depuis ce monorepo uniquement.
+- **Version 0.1** : `@delphia/vite-plugin` exige Vite 8 (non testé sur Vite 5 à 7).
 - **Mod en accès anticipé** de Claude Code : moteur 2.1.308 ou plus ; API susceptible de changer.
 - **`translate` décale sans libérer l'espace** : un élément déplacé laisse sa place d'origine
   vide dans la mise en page. C'est voulu pour la retouche fine ; ce n'est pas du positionnement

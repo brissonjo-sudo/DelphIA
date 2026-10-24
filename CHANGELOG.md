@@ -27,9 +27,21 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - Documentation d'usage (README, guide, CONTRIBUTING, SECURITY), CI GitHub Actions
   (Windows et Linux, Node 22) et fichier marketplace `.claude-plugin/marketplace.json`.
 
+- Préparation de la publication npm (`@delphia/protocol`, `@delphia/vite-plugin`,
+  `@delphia/bridge`) : métadonnées, licence et README par paquet, dépendances internes en
+  `^0.1.0`, `ws` en `^8.22.0`, script `release:dry-run`, procédure `RELEASING.md`.
+
+### Modifié
+
+- `@delphia/bridge` embarque l'interface du concepteur (`dist/designer`) et la sert par
+  défaut ; ordre de build : protocol, vite-plugin, designer, bridge, demo.
+
 ### Vérifié
 
 - Essai de bout en bout : glisser dans le concepteur → `overrides.json` → mise à jour à chaud
   de l'app ; clavier ; « Libérer ».
 - Mod en session Claude Code réelle (moteur 2.1.308) : section de prompt injectée, pont lancé,
   écriture dans `.delphia/` et suppression d'un id épinglé refusées.
+- Paquets installés depuis leurs archives npm dans un projet extérieur au monorepo : build avec
+  surcouche, concepteur servi par le pont, ajustement au clavier écrit, mod qui lance le pont
+  depuis `node_modules`, commande `npx delphia-bridge`.

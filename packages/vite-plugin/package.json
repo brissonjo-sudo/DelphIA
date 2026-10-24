@@ -2,7 +2,25 @@
   "name": "@delphia/vite-plugin",
   "version": "0.1.0",
   "description": "Plugin Vite DelphIA : CSS de surcouche des ajustements manuels et runtime de mesure pour le concepteur.",
+  "keywords": [
+    "delphia",
+    "claude-code",
+    "visual-designer",
+    "tauri",
+    "vite",
+    "vite-plugin"
+  ],
+  "homepage": "https://github.com/brissonjo-sudo/DelphIA#readme",
+  "bugs": {
+    "url": "https://github.com/brissonjo-sudo/DelphIA/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brissonjo-sudo/DelphIA.git",
+    "directory": "packages/vite-plugin"
+  },
   "license": "MIT",
+  "author": "Murukan",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,14 +31,22 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@delphia/protocol": "*"
+    "@delphia/protocol": "^0.1.0"
   },
   "peerDependencies": {
     "vite": "^8.0.0"

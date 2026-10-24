@@ -153,8 +153,9 @@ l'écrase aussi à son démarrage. Vous pouvez supprimer le fichier à la main (
 le mod bloque ses écritures dans `.delphia/`).
 
 **« DelphIA : pont indisponible — cli du pont introuvable ».** Le mod ne trouve pas
-`@delphia/bridge` (paquet non publié sur npm). Lancez `npm run delphia -- --project <projet>`
-depuis le dépôt DelphIA.
+`<projet>/node_modules/@delphia/bridge`. Installez-le (`npm install -D @delphia/bridge`) puis
+ouvrez une nouvelle session, ou lancez-le à la main : `npx delphia-bridge --project .`
+(depuis le dépôt DelphIA : `npm run delphia -- --project <projet>`).
 
 **Le mod ne se charge pas / `plugin validate` échoue sur les `modules`.** Le `claude` de votre
 `PATH` est trop ancien : les `modules` de hooks demandent le moteur 2.1.308 ou plus. Mettez
