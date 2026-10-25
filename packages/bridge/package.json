@@ -1,6 +1,6 @@
 {
   "name": "@vite-plugin-delph-ia/bridge",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Pont local DelphIA : sert le concepteur, expose un WebSocket et écrit .delphia/overrides.json.",
   "keywords": [
     "delphia",

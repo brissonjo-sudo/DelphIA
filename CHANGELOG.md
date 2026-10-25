@@ -4,6 +4,15 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+## [bridge 0.2.2] - 2026-10-25
+
+### Corrigé
+
+- Concepteur : un simple clic sur un élément proche d'un autre le déplaçait et le collait à
+  son voisin (l'accrochage s'appliquait à un déplacement nul, puis l'ajustement était
+  enregistré). Un geste ne devient un glisser qu'au-delà de 3 px ; en dessous, c'est une
+  sélection seule, sans aperçu ni ajustement.
+
 ## [bridge 0.2.1] - 2026-10-25
 
 ### Corrigé

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeDrag } from '../src/core/drag.js'
+import { computeDrag, isDragStarted } from '../src/core/drag.js'
 import { findGuides, snapAxis, snapToGrid } from '../src/core/snap.js'
 
 const R = { x: 100, y: 100, width: 100, height: 40 }
@@ -97,5 +97,31 @@ describe('findGuides', () => {
 
   it('vide quand rien n’est aligné', () => {
     expect(findGuides(R, [{ x: 500, y: 500, width: 7, height: 9 }])).toEqual([])
+  })
+})
+
+describe('seuil de glisser (un clic ne déplace jamais un élément)', () => {
+  it('clic et tremblement de souris : pas de glisser', () => {
+    expect(isDragStarted(0, 0)).toBe(false)
+    expect(isDragStarted(1, -1)).toBe(false)
+    expect(isDragStarted(2, 2)).toBe(false)
+  })
+  it('à partir de 3 px, quelle que soit la direction : glisser', () => {
+    expect(isDragStarted(3, 0)).toBe(true)
+    expect(isDragStarted(0, -3)).toBe(true)
+    expect(isDragStarted(-2.2, 2.2)).toBe(true)
+  })
+  it("le seuil est nécessaire : sans lui, un déplacement nul s'aimante sur un voisin proche", () => {
+    const r = computeDrag({
+      mode: 'move',
+      startRect: { x: 103, y: 0, width: 50, height: 20 },
+      startGeometry: {},
+      dx: 0,
+      dy: 0,
+      targets: [{ x: 0, y: 0, width: 100, height: 20 }],
+      snap: true,
+      grid: false,
+    })
+    expect(r.changed).toBe(true)
   })
 })
