@@ -23,6 +23,8 @@ import { createToolbar } from './ui/toolbar.js'
 
 const PING_MS = 2000
 const SILENCE_MS = 6000
+/** App muette depuis ce délai : on recharge l'iframe (app lancée après le concepteur). */
+const RELOAD_MS = 8000
 const TICK_MS = 500
 
 declare global {
@@ -49,6 +51,8 @@ function main(): void {
   const shell = buildShell(root)
   const store = createStore(initialState())
   let lastSeen = 0
+  let loadedAt = Date.now()
+  let reloadApp: (() => void) | null = null
 
   // Redirection tardive : les liens sont créés après la lecture de la configuration.
   let bridge: BridgeClient = { send: () => false, close() {} }
@@ -134,17 +138,31 @@ function main(): void {
       iframe.title = 'Application affichée'
       shell.viewport.prepend(iframe)
       runtime = createRuntimeLink({ iframe, appUrl: cfg.value.appUrl, onMessage: onRuntime })
-      iframe.addEventListener('load', () => runtime.send({ type: 'designer:measure' }))
-      iframe.src = cfg.value.appUrl
+      iframe.addEventListener('load', () => {
+        loadedAt = Date.now()
+        runtime.send({ type: 'designer:measure' })
+      })
+      reloadApp = () => {
+        loadedAt = Date.now()
+        iframe.src = cfg.value.appUrl
+      }
+      reloadApp()
       bridge = createBridgeClient({ url: bridgeSocketUrl(location), ...bridgeCallbacks })
     })
   }
 
-  // Détecte l'arrêt de l'app : le runtime répond toujours à une mesure.
+  // Le runtime répond toujours à une mesure. Connectée : on détecte son arrêt. Pas encore
+  // connectée : on redemande (le premier échange peut partir avant que le runtime écoute), et
+  // on recharge l'iframe si l'app reste muette (lancée après le concepteur, page d'erreur).
   setInterval(() => {
-    if (!store.get().appConnected) return
-    if (Date.now() - lastSeen > SILENCE_MS) store.set({ appConnected: false })
-    else runtime.send({ type: 'designer:measure' })
+    const now = Date.now()
+    if (store.get().appConnected) {
+      if (now - lastSeen > SILENCE_MS) store.set({ appConnected: false })
+      else runtime.send({ type: 'designer:measure' })
+      return
+    }
+    runtime.send({ type: 'designer:measure' })
+    if (reloadApp && now - loadedAt > RELOAD_MS && now - lastSeen > RELOAD_MS) reloadApp()
   }, PING_MS)
   setInterval(bakeCtl.tick, TICK_MS)
 }
