@@ -4,6 +4,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+## [mod 0.2.1] - 2026-10-25
+
+### Corrigé
+
+- Mod : le pont est cherché dans le `node_modules` du projet **et de ses dossiers parents**,
+  comme Node.js. Dans un workspace npm (dépendances installées à la racine du dépôt), le mod
+  affichait « pont indisponible ».
+
 ## [0.2.0] - 2026-10-25
 
 Paquets npm `@vite-plugin-delph-ia/protocol`, `vite-plugin`, `bridge` en 0.2.0 ; mod `delphia`

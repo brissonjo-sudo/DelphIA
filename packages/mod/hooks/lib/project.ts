@@ -20,6 +20,23 @@ export type Ctx = EngineInterface
 
 export const join = (root: string, rel: string): string => `${root.replace(/[\\/]+$/, '')}/${rel}`
 
+/**
+ * `start` puis ses dossiers parents (au plus `max`), séparateurs normalisés en `/`.
+ * Sert à chercher `node_modules` comme Node.js : dans un workspace npm, les dépendances sont
+ * installées à la racine du dépôt, pas dans le sous-projet.
+ */
+export function ancestors(start: string, max = 16): string[] {
+  const out: string[] = []
+  let dir = start.replaceAll('\\', '/').replace(/\/+$/, '')
+  while (dir && out.length < max) {
+    out.push(dir)
+    const cut = dir.lastIndexOf('/')
+    if (cut < 0) break
+    dir = dir.slice(0, cut)
+  }
+  return out
+}
+
 function debug($: Ctx, text: string): void {
   $.ui.log(`delphia: ${text}`, { to: 'debug' })
 }

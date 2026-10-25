@@ -1,5 +1,5 @@
 // Lancement et suivi du serveur pont (processus Node autonome, ADR 0002).
-import { join, readBridgeInfo, readConfig } from './project.js'
+import { ancestors, join, readBridgeInfo, readConfig } from './project.js'
 import type { Ctx } from './project.js'
 
 export type BridgeState = {
@@ -31,10 +31,15 @@ export async function readBridgeState($: Ctx): Promise<BridgeState> {
   return value ?? { status: 'stopped', url: null, detail: 'jamais lancé' }
 }
 
-/** Chemin du CLI du pont : copie locale du projet, sinon dépôt voisin du mod. */
+/**
+ * Chemin du CLI du pont : `node_modules` du projet ou d'un dossier parent (workspace npm),
+ * sinon dépôt voisin du mod (mod chargé depuis le dépôt DelphIA).
+ */
 export async function findBridgeCli($: Ctx, cwd: string): Promise<string | undefined> {
   const candidates = [
-    join(cwd, 'node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js'),
+    ...ancestors(cwd).map(dir =>
+      join(dir, 'node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js'),
+    ),
     `${$.plugin.root}/../bridge/dist/cli.js`,
   ]
   for (const path of candidates) {
