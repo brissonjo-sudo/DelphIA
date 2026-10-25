@@ -9,6 +9,18 @@ import {
 } from './geometry.js'
 import { findGuides, snapAxis, snapToGrid, targetValues, type Axis, type Guide } from './snap.js'
 
+/**
+ * Distance minimale (px) avant qu'un geste devienne un glisser. En dessous, c'est un clic :
+ * sélection seule, sans aperçu ni ajustement — sinon l'accrochage aimanterait l'élément vers
+ * un voisin proche dès le simple clic.
+ */
+export const DRAG_THRESHOLD_PX = 3
+
+/** Vrai dès que la souris s'est éloignée du point de départ d'au moins `threshold` px. */
+export function isDragStarted(dx: number, dy: number, threshold = DRAG_THRESHOLD_PX): boolean {
+  return Math.hypot(dx, dy) >= threshold
+}
+
 export interface DragInput {
   mode: DragMode
   /** Rectangle mesuré au début du geste (inclut déjà le `translate` existant). */

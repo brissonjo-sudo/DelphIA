@@ -1,6 +1,6 @@
 import type { Geometry, Rect } from '@vite-plugin-delph-ia/protocol'
 import type { Actions } from '../actions.js'
-import { computeDrag } from '../core/drag.js'
+import { computeDrag, isDragStarted } from '../core/drag.js'
 import { hitTest, snapTargets } from '../core/elements.js'
 import type { DragMode, Handle } from '../core/geometry.js'
 import { HANDLES, pickGeometry } from '../core/geometry.js'
@@ -17,6 +17,8 @@ interface Session {
   targets: Rect[]
   previewed: boolean
   lastKey: string
+  /** Faux tant que la souris n'a pas dépassé le seuil : le geste est encore un clic. */
+  dragging: boolean
 }
 
 const isHandle = (v: string | undefined): v is Handle => HANDLES.includes(v as Handle)
@@ -64,6 +66,7 @@ export function attachInteraction(overlay: HTMLElement, store: Store, actions: A
       targets: snapTargets(s.elements, id),
       previewed: false,
       lastKey: '',
+      dragging: false,
     }
   }
 
@@ -76,6 +79,10 @@ export function attachInteraction(overlay: HTMLElement, store: Store, actions: A
       return
     }
     const p = point(e)
+    if (!session.dragging) {
+      if (!isDragStarted(p.x - session.startX, p.y - session.startY)) return
+      session.dragging = true
+    }
     const r = computeDrag({
       mode: session.mode,
       startRect: session.startRect,
@@ -99,6 +106,8 @@ export function attachInteraction(overlay: HTMLElement, store: Store, actions: A
     const s = store.get()
     const done = session
     session = null
+    // Simple clic (seuil jamais franchi) : sélection seule, aucun ajustement.
+    if (!done.dragging) return
     const p = point(e)
     const r = computeDrag({
       mode: done.mode,
