@@ -1,5 +1,7 @@
 import {
+  emptyBake,
   emptyOverrides,
+  type BakeDoc,
   type ElementInfo,
   type Geometry,
   type OverridesDoc,
@@ -18,14 +20,26 @@ export interface AppState {
   /** Vrai dès qu'une mesure a été reçue : avant, on ne peut pas parler d'orphelins. */
   measured: boolean
   elements: ElementInfo[]
+  /** Taille de la fenêtre de l'app lors de la dernière mesure. */
+  appViewport: { width: number; height: number } | null
   overrides: OverridesDoc
+  /** Élément principal : le dernier sélectionné (inspecteur, glisser, clavier). */
   selectedId: string | null
+  /** Sélection multiple (Maj+clic) ; l'élément principal en est le dernier. */
+  selectedIds: string[]
   hoverId: string | null
   gridOn: boolean
   snapOn: boolean
   /** Rectangle visé pendant un glisser (remplace le rectangle mesuré pour l'affichage). */
   ghost: { id: string; rect: Rect; geometry: Geometry } | null
   guides: Guide[]
+  bake: BakeDoc
+  /** Mesure fraîche demandée avant d'envoyer `bake:request`. */
+  bakeAwaiting: boolean
+  /** Dernier bakeId dont le résultat a été masqué. */
+  bakeDismissed: string | null
+  /** Message d'état local (vérification impossible, éléments ignorés…). */
+  bakeNotice: string | null
 }
 
 export const initialState = (): AppState => ({
@@ -36,13 +50,19 @@ export const initialState = (): AppState => ({
   appUrl: null,
   measured: false,
   elements: [],
+  appViewport: null,
   overrides: emptyOverrides(),
   selectedId: null,
+  selectedIds: [],
   hoverId: null,
   gridOn: false,
   snapOn: true,
   ghost: null,
   guides: [],
+  bake: emptyBake(),
+  bakeAwaiting: false,
+  bakeDismissed: null,
+  bakeNotice: null,
 })
 
 export interface Store {

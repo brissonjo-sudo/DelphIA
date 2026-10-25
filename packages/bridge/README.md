@@ -1,7 +1,7 @@
 # @vite-plugin-delph-ia/bridge
 
 Pont local DelphIA : sert le concepteur, expose un WebSocket (`/ws`) et reste le **seul** à écrire
-`<projet>/.delphia/overrides.json`.
+`<projet>/.delphia/overrides.json` et `<projet>/.delphia/bake.json` (« Figer », ADR 0003).
 
 ## Lancer
 
@@ -22,8 +22,29 @@ npm run delphia -- --project <dossier-du-projet> [--designer-dir <dossier>]
 
 ```ts
 import { startBridge } from '@vite-plugin-delph-ia/bridge'
-const { port, close } = await startBridge({ project, designerDir, port: 0, log: console.log })
+const { port, token, close } = await startBridge({
+  project,
+  designerDir,
+  port: 0,
+  log: console.log,
+})
 ```
+
+## Figer
+
+- WebSocket : `bake:request`, `bake:cancel`, `bake:verify`, `bake:revert` ; `bake:state` envoyé après
+  `overrides:state` à la connexion, puis diffusé à chaque changement. Un refus renvoie
+  `bridge:error` à l'émetteur seul.
+- HTTP `POST` (utilisées par le mod), corps JSON `application/json` ≤ 64 Ko :
+  `/api/bake/applied` (retire les éléments de la surcouche) et `/api/bake/cancel`.
+  Codes : 200 `{"ok":true}`, 400 corps invalide, 401 jeton absent/faux, 403 `Host` invalide ou
+  en-tête `Origin` présent, 409 mauvais état ou `bakeId`, 413 corps trop gros, 415 type non JSON.
+- Jeton : 32 octets aléatoires (hex), régénéré à chaque démarrage, écrit dans
+  `.delphia/bridge.json` (`token`) et exigé dans l'en-tête `x-delphia-token`. Il protège des pages
+  web, pas d'un processus local qui peut lire le fichier.
+- `bake.json` invalide au démarrage : le pont refuse de démarrer (jamais écrasé).
+- Les transitions qui touchent aux deux fichiers sont sérialisées avec les ajustements ; ordre
+  d'écriture : `overrides.json` puis `bake.json` (le premier est remis si le second échoue).
 
 ## Sécurité
 

@@ -92,7 +92,13 @@ describe('concepteur ⇄ pont', () => {
 
 describe('bridge.json', () => {
   it('valide les ports', () => {
-    const base = { pid: 42, port: 4317, appPort: 1420, startedAt: '2026-10-24T12:00:00.000Z' }
+    const base = {
+      pid: 42,
+      port: 4317,
+      appPort: 1420,
+      startedAt: '2026-10-24T12:00:00.000Z',
+      token: 'a'.repeat(32),
+    }
     expect(parseBridgeInfo(base).ok).toBe(true)
     expect(parseBridgeInfo({ ...base, port: 70_000 }).ok).toBe(false)
   })

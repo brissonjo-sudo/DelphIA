@@ -6,6 +6,7 @@ import {
   OVERRIDES_FILE,
   parseBridgeToClient,
   wrap,
+  type BakeDoc,
   type BridgeToClient,
   type OverridesDoc,
 } from '@vite-plugin-delph-ia/protocol'
@@ -72,15 +73,19 @@ export function raw(
 export class Client {
   private queue: BridgeToClient[] = []
   private waiters: Array<(m: BridgeToClient) => void> = []
+  // `bake:state` a sa propre file : les tests d'ajustements ne le voient pas.
+  private bakeQueue: BridgeToClient[] = []
+  private bakeWaiters: Array<(m: BridgeToClient) => void> = []
   closed = false
 
   private constructor(readonly ws: WebSocket) {
     ws.on('message', data => {
       const parsed = parseBridgeToClient(JSON.parse(data.toString()))
       if (!parsed.ok) throw new Error(`message du pont invalide : ${parsed.errors.join(' ; ')}`)
-      const waiter = this.waiters.shift()
+      const isBake = parsed.value.type === 'bake:state'
+      const waiter = (isBake ? this.bakeWaiters : this.waiters).shift()
       if (waiter) waiter(parsed.value)
-      else this.queue.push(parsed.value)
+      else (isBake ? this.bakeQueue : this.queue).push(parsed.value)
     })
     ws.on('close', () => (this.closed = true))
   }
@@ -95,7 +100,15 @@ export class Client {
   }
 
   next(timeoutMs = 2_000): Promise<BridgeToClient> {
-    const queued = this.queue.shift()
+    return this.take(this.queue, this.waiters, timeoutMs)
+  }
+
+  private take(
+    queue: BridgeToClient[],
+    waiters: Array<(m: BridgeToClient) => void>,
+    timeoutMs: number,
+  ): Promise<BridgeToClient> {
+    const queued = queue.shift()
     if (queued) return Promise.resolve(queued)
     return new Promise((resolve, reject) => {
       const waiter = (m: BridgeToClient): void => {
@@ -103,11 +116,17 @@ export class Client {
         resolve(m)
       }
       const timer = setTimeout(() => {
-        this.waiters = this.waiters.filter(w => w !== waiter) // sinon il avalerait le message suivant
+        waiters.splice(waiters.indexOf(waiter), 1) // sinon il avalerait le message suivant
         reject(new Error('aucun message reçu'))
       }, timeoutMs)
-      this.waiters.push(waiter)
+      waiters.push(waiter)
     })
+  }
+
+  async nextBake(timeoutMs = 2_000): Promise<BakeDoc> {
+    const m = await this.take(this.bakeQueue, this.bakeWaiters, timeoutMs)
+    if (m.type !== 'bake:state') throw new Error(`bake:state attendu, reçu ${m.type}`)
+    return m.bake
   }
 
   async nextState(): Promise<OverridesDoc> {
@@ -133,4 +152,32 @@ export class Client {
   close(): void {
     this.ws.close()
   }
+}
+
+/** `POST` JSON brut (sans en-tête par défaut hormis ceux fournis). */
+export function post(
+  port: number,
+  path: string,
+  body: string,
+  headers: Record<string, string> = {},
+): Promise<{ status: number; body: string }> {
+  return new Promise((resolve, reject) => {
+    const req = request(
+      {
+        host: '127.0.0.1',
+        port,
+        path,
+        method: 'POST',
+        headers: { Host: `127.0.0.1:${port}`, 'content-type': 'application/json', ...headers },
+      },
+      res => {
+        let text = ''
+        res.setEncoding('utf8')
+        res.on('data', chunk => (text += chunk))
+        res.on('end', () => resolve({ status: res.statusCode ?? 0, body: text }))
+      },
+    )
+    req.on('error', reject)
+    req.end(body)
+  })
 }

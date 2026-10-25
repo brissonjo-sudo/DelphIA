@@ -86,6 +86,25 @@ n'existe plus dans la page (élément renommé ou supprimé) ; chacun a son bout
 
 Limite connue : `translate` décale l'élément sans libérer l'espace qu'il occupait (ADR 0001).
 
+## 4 bis. Figer des ajustements dans le code
+
+1. Dans le concepteur, cliquez un élément épinglé, puis **Maj+clic** pour en ajouter d'autres.
+2. Cliquez **Figer** (barre d'outils ou inspecteur). Seuls les éléments épinglés sont pris ; le
+   bandeau, en haut de la colonne de droite, indique « En attente de Claude ».
+3. Dans Claude Code, la zone de saisie contient « Fige les ajustements DelphIA dans le code
+   (demande bk-…) » : validez par Entrée. Avec l'option `figer: "direct"` du mod, le tour part
+   seul. « Annuler » dans le bandeau abandonne la demande tant que Claude n'a pas commencé.
+4. À la fin du tour, DelphIA retire ces éléments de la surcouche, l'app se recharge, le
+   concepteur remesure :
+   - **Figé** : la position et la taille mesurées sont celles que vous aviez réglées (1 px près) ;
+   - **Écart** : les écarts par élément et les fichiers modifiés s'affichent ; **Rétablir** remet
+     les ajustements dans la surcouche (le code modifié reste : annulez avec git).
+5. Gardez la fenêtre du concepteur à la même taille pendant un figeage : la mise en page de
+   l'app peut dépendre de sa taille ; le concepteur vous prévient si elle change.
+
+Si Claude répond sans modifier de fichier, ou si le tour est interrompu, la demande est annulée
+et la surcouche reste intacte.
+
 ## 5. Ce que voit Claude
 
 Avec le mod actif, à chaque tour, s'il y a au moins un élément épinglé, Claude reçoit en

@@ -1,4 +1,5 @@
 // Commande /delphia : état du pont et éléments épinglés.
+import { bakeReport } from './bake.js'
 import { readBridgeState } from './bridge.js'
 import { readOverrides } from './project.js'
 import type { Ctx } from './project.js'
@@ -17,5 +18,6 @@ export async function delphiaReport($: Ctx, cwd: string): Promise<string> {
   ]
   lines.push(...ids.slice(0, SHOWN).map(id => `- ${id}`))
   if (ids.length > SHOWN) lines.push(`- … et ${ids.length - SHOWN} autre(s)`)
+  lines.push(...(await bakeReport($, cwd)))
   return lines.join('\n')
 }

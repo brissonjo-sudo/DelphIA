@@ -106,3 +106,65 @@ border-box` si taille) ; `geometry: null` retire ces propriétés inline. **La g
 - Commande `/delphia` : état (pont, URL du concepteur, nombre d'éléments épinglés).
 - Le protocole est copié dans le mod au build (`hooks/vendor/protocol/`) : un mod ne charge
   que ses propres fichiers.
+
+## 6. « Figer » (ADR 0003, v0.2)
+
+Types et validateurs : `packages/protocol/src/bake.ts`, `messages.ts`, `bridge-info.ts`.
+
+### Pont
+
+- `bridge.json` contient `token` (32 octets aléatoires en hexadécimal, `node:crypto`), régénéré
+  à chaque démarrage. `parseBridgeInfo` l'exige.
+- `.delphia/bake.json` (`BakeDoc`) : lu au démarrage (absent → `emptyBake()` ; invalide →
+  démarrage refusé, comme `overrides.json`) ; écriture atomique ; envoyé à la connexion
+  (`bake:state`) puis diffusé à chaque changement. `history` : 20 entrées max, plus récente en tête.
+- WebSocket :
+  - `bake:request` : refusé (`bridge:error`) si une demande est ouverte (`isBakeOpen`) ou si un
+    id n'a pas d'ajustement dans `overrides.json`. Sinon crée `current` (`requested`,
+    `bakeId = makeBakeId(randomBytes(8))`, géométrie copiée depuis `overrides.json`).
+  - `bake:cancel` : seulement si `current.status === 'requested'` → `cancelled`, archivé.
+  - `bake:verify` : seulement si `current.status === 'applied'` et `bakeId` identique ; le pont
+    calcule `results` avec `compareRects(item.target, actual)` → `verified` (tous ok) ou
+    `mismatch` ; archivé dans les deux cas (`current = null`).
+  - `bake:revert` : demande `applied`, ou la plus récente de `history` en `mismatch`/`verified`
+    portant ce `bakeId` → réapplique chaque `item.geometry` dans `overrides.json`
+    (`applyPatch`, un seul enregistrement, révision +1) → statut `reverted`.
+- HTTP (`POST`, corps JSON ≤ 64 Ko, `content-type: application/json`) :
+  - contrôles : `Host` autorisé ; **aucun en-tête `Origin`** (sinon 403) ; en-tête
+    `x-delphia-token` égal au jeton (`timingSafeEqual`, sinon 401) ;
+  - `BAKE_APPLIED_ROUTE` (`parseBakeAppliedBody`) : seulement si `current.bakeId` égal et
+    statut `requested` → retire les ids des `items` de `overrides.json` (un seul
+    enregistrement, révision +1) → `applied` + `touchedFiles` → 200 `{ "ok": true }` ;
+  - `BAKE_CANCEL_ROUTE` (`parseBakeCancelBody`) : seulement si `requested` → `cancelled` +
+    `note`, archivé → 200 ;
+  - autre état → 409 ; corps invalide → 400.
+
+### Concepteur
+
+- Sélection multiple (Maj+clic) ; bouton « Figer » (actif si ≥ 1 élément sélectionné épinglé et
+  aucune demande ouverte). Il mesure les rectangles actuels (`designer:measure` puis
+  `runtime:elements`), envoie `bake:request` avec les rectangles des éléments sélectionnés.
+- Bandeau d'état de la demande courante : `requested` (« En attente de Claude — validez la
+  demande dans Claude Code », bouton « Annuler » → `bake:cancel`) ; `applied` (« Vérification… »).
+- Sur `bake:state` passé à `applied` : attendre la mise à jour de l'app (nouvel
+  `overrides:state` + `runtime:elements` suivant, délai max 5 s), puis `designer:measure` et
+  `bake:verify` avec les rectangles des ids (`null` si absent).
+- Résultat : `verified` → « Figé » ; `mismatch` → liste des écarts par élément (delta en px),
+  fichiers touchés, bouton « Rétablir » (`bake:revert`) ; historique court (5 dernières).
+
+### Mod
+
+- `userConfig` `figer` : `"preremplir"` (défaut) | `"direct"`.
+- Détection : `$.clock.every(1000)` (démarré dans `session.start`, projet actif) + `turn.start`
+  lisent `bake.json` ; une demande `requested` jamais vue (`$.state`) → `$.prompt.fill`
+  (`bakeTrigger(bakeId)`, mode `replace`) ou `$.prompt.submit`, + `$.ui.toast`.
+- `prompt.submit` : si le texte contient un `bakeId` (`findBakeId`) égal à la demande
+  `requested` courante → `next({ ...e, context: [...(e.context ?? []), bakeInstructions(req)] })`
+  et mémorise « tour de figeage actif » (`$.state`).
+- `prompt.compose` : pendant un tour de figeage actif, la section de verrous exclut les ids de la
+  demande (`summarizeForPrompt` d'un document sans ces ids).
+- `tool.call` (Write, Edit, MultiEdit, NotebookEdit) pendant le tour actif : note le chemin
+  (relatif au projet) après une exécution réussie.
+- `turn.complete` : tour actif → `POST` applied (raison « answered », sinon cancel avec la
+  raison), via `$.http.fetch` vers `http://127.0.0.1:<port>` de `bridge.json`, en-tête
+  `x-delphia-token`, sans `Origin` ; puis efface l'état actif. Erreur réseau → statut + toast.

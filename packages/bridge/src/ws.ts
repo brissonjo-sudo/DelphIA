@@ -3,10 +3,12 @@ import type { Duplex } from 'node:stream'
 import {
   parseClientToBridge,
   wrap,
+  type BakeDoc,
   type BridgeToClient,
   type OverridesDoc,
 } from '@vite-plugin-delph-ia/protocol'
 import { WebSocket, WebSocketServer } from 'ws'
+import type { BakeResultOf, BakeStore } from './bake-store.js'
 import { hostAllowed } from './http.js'
 import type { Store } from './store.js'
 
@@ -15,6 +17,7 @@ export const MAX_MESSAGE_BYTES = 64 * 1024
 
 export interface WsHub {
   broadcast(doc: OverridesDoc): void
+  broadcastBake(bake: BakeDoc): void
   close(): void
 }
 
@@ -34,6 +37,7 @@ const reject = (socket: Duplex, status: string): void => {
 export function attachWs(
   server: Server,
   store: Store,
+  bake: BakeStore,
   getPort: () => number,
   log: (line: string) => void,
 ): WsHub {
@@ -42,6 +46,9 @@ export function attachWs(
   const hub: WsHub = {
     broadcast(doc) {
       for (const client of wss.clients) send(client, { type: 'overrides:state', doc })
+    },
+    broadcastBake(doc) {
+      for (const client of wss.clients) send(client, { type: 'bake:state', bake: doc })
     },
     close() {
       for (const client of wss.clients) client.terminate()
@@ -62,6 +69,7 @@ export function attachWs(
   wss.on('connection', ws => {
     ws.on('error', e => log(`client WebSocket : ${e.message}`)) // ex. message trop gros (1009)
     send(ws, { type: 'overrides:state', doc: store.current() })
+    send(ws, { type: 'bake:state', bake: bake.current() })
 
     ws.on('message', (data, isBinary) => {
       const fail = (message: string): void => send(ws, { type: 'bridge:error', message })
@@ -74,11 +82,26 @@ export function attachWs(
       }
       const msg = parseClientToBridge(json)
       if (!msg.ok) return fail(msg.errors.join(' ; ').slice(0, 300))
-      const patch = msg.value.type === 'override:set' ? msg.value.patch : null
-      store.apply(msg.value.id, patch).then(
-        doc => hub.broadcast(doc),
-        (e: Error) => fail(e.message.slice(0, 300)),
-      )
+      const m = msg.value
+      const onError = (e: Error): void => fail(e.message.slice(0, 300))
+      const bakeOp = (p: Promise<BakeResultOf>): void =>
+        void p.then(r => (r.ok ? undefined : fail(r.error)), onError)
+      switch (m.type) {
+        case 'override:set':
+        case 'override:clear':
+          store
+            .apply(m.id, m.type === 'override:set' ? m.patch : null)
+            .then(d => hub.broadcast(d), onError)
+          return
+        case 'bake:request':
+          return bakeOp(bake.request(m.items))
+        case 'bake:cancel':
+          return bakeOp(bake.cancel(m.bakeId, null))
+        case 'bake:verify':
+          return bakeOp(bake.verify(m.bakeId, m.results))
+        case 'bake:revert':
+          return bakeOp(bake.revert(m.bakeId))
+      }
     })
   })
 
