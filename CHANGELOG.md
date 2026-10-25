@@ -4,6 +4,15 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+## [bridge 0.2.1] - 2026-10-25
+
+### Corrigé
+
+- Concepteur (embarqué dans `@vite-plugin-delph-ia/bridge`) : il restait « App non connectée »
+  quand le premier message de l'app partait avant que le concepteur l'écoute, ou quand l'app
+  était lancée après lui. Tant que l'app ne répond pas, il redemande une mesure toutes les 2 s
+  et recharge l'iframe au bout de 8 s de silence. Constaté dans Chrome 156.
+
 ## [mod 0.2.1] - 2026-10-25
 
 ### Corrigé
