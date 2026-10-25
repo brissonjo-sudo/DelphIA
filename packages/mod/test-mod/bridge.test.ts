@@ -24,6 +24,24 @@ test("session.start lance le pont et affiche l'URL du concepteur", async ($, on)
   expect(world.statuses[world.statuses.length - 1]).toContain('pont arrêté')
 })
 
+test('workspace npm : pont trouvé dans le node_modules d’un dossier parent', async ($, on) => {
+  const sub = `${CWD}/examples/demo`
+  const world = installWorld(on, { [`${sub}/delphia.config.json`]: '{}', [CLI]: '' })
+  const argvs: (readonly string[])[] = []
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('process.spawn', async function* (_, e) {
+    argvs.push(e.argv)
+    yield { stream: 'stdout', text: 'DelphIA bridge listening on http://127.0.0.1:4317/\n' }
+    return { value: { code: 0, signal: null } }
+  })
+  await $.session.start({ ...START, cwd: sub })
+  for (let i = 0; i < 200; i++) await Promise.resolve()
+  expect(String(argvs[0]?.[1]).replaceAll('\\', '/')).toContain(
+    '/proj/node_modules/@vite-plugin-delph-ia/bridge/dist/cli.js',
+  )
+  expect(world.statuses).toContain('DelphIA : concepteur http://127.0.0.1:4317/')
+})
+
 test("pont introuvable : statut explicite, rien n'est lancé", async ($, on) => {
   const world = installWorld(on, { [CONFIG]: '{}' })
   let spawned = 0
