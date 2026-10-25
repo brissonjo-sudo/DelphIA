@@ -149,6 +149,12 @@ input {
   cursor: pointer;
 }
 
+/* Ajustement figé depuis DelphIA : remonte de 1 px sans déplacer les tâches suivantes. */
+.tache[data-dz-id='task-1'] {
+  margin-top: -1px;
+  margin-bottom: 7px;
+}
+
 .tache.selectionnee {
   border-color: var(--accent);
   background: var(--accent-doux);
