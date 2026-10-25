@@ -4,6 +4,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Non publié]
 
+## [0.2.0] - 2026-10-25
+
+Paquets npm `@vite-plugin-delph-ia/protocol`, `vite-plugin`, `bridge` en 0.2.0 ; mod `delphia`
+0.2.0. **Changement incompatible** : le pont 0.2.0 écrit un jeton dans `bridge.json`, que le
+mod 0.2.0 exige ; mettre à jour les paquets et le mod ensemble.
+
 ### Ajouté
 
 - **« Figer »** (ADR 0003) : intégrer des ajustements de la surcouche dans le vrai code.

@@ -137,9 +137,25 @@ Ce parcours (paquets installés depuis leurs archives npm dans un projet extéri
 monorepo, concepteur, ajustement au clavier, build, mod qui lance le pont depuis
 `node_modules`) a été vérifié avant publication. Plugin Vite : Vite 8.
 
+## Figer un ajustement dans le code
+
+Une retouche peut rester dans la surcouche, ou être **figée** dans le vrai code :
+
+1. dans le concepteur, sélectionnez un ou plusieurs éléments épinglés (Maj+clic), puis
+   **Figer** ;
+2. le mod prépare la demande dans votre session Claude Code (zone de saisie préremplie : validez
+   par Entrée ; option `figer: "direct"` pour l'envoyer sans validation) ;
+3. Claude reproduit les ajustements dans le code (CSS idiomatique, `data-dz-id` conservés) ;
+4. DelphIA retire la surcouche, remesure, et affiche **Figé** si le rendu est identique au pixel
+   près, sinon les écarts et un bouton **Rétablir**.
+
+Si Claude ne modifie aucun fichier, la demande est annulée et la surcouche reste. « Rétablir »
+remet la surcouche mais ne défait pas le code : utilisez git. Détails :
+[ADR 0003](docs/adr/0003-figer.md).
+
 ## Limites connues
 
-- **Version 0.1** : `@vite-plugin-delph-ia/vite-plugin` exige Vite 8 (non testé sur Vite 5 à 7).
+- **Version 0.2** : `@vite-plugin-delph-ia/vite-plugin` exige Vite 8 (non testé sur Vite 5 à 7).
 - **Mod en accès anticipé** de Claude Code : moteur 2.1.308 ou plus ; API susceptible de changer.
 - **`translate` décale sans libérer l'espace** : un élément déplacé laisse sa place d'origine
   vide dans la mise en page. C'est voulu pour la retouche fine ; ce n'est pas du positionnement
